@@ -1,0 +1,29 @@
+.static_page {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  /** 链接样式 */
+  .ellipsis_link > span { color: #008dff;cursor: pointer; }
+
+  /** title ellipsis */
+  .table-title-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    word-break: keep-all;
+  }
+
+  :global {
+    // table首列的间距
+    // .ant-table-container table>thead>tr:first-child th:first-child,
+    // .ant-table-container table>tbody>tr > td:first-child {
+    //   padding-left: 30px;
+    // }
+    /* toolbar（表格上面的按钮位置）的位置反转 */
+    .ant-pro-table-list-toolbar-right {
+      flex-direction: row-reverse;
+    }
+  }
+
+}

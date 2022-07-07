@@ -1,0 +1,66 @@
+
+.swiper_container {
+  position: relative;
+  margin-top: 20px;
+  //
+  box-shadow: 0 0 8px 0 rgba(117,133,162,0.20);
+  border-radius: 5px;
+
+  .container_carousel {
+    background-color: #fff;
+    height: 480px;
+  }
+
+  .banner_item {
+    min-height: 480px;
+  }
+  .limit_height {
+    height: 480px;
+  }
+  .common {
+    background-color: #c7c7c7;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    transform: translate(0, -50%);
+    cursor: pointer;
+    //
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  .common_icon_style {
+    color: #fff;
+    font-size: 28px;
+  }
+
+  .btn_prev {
+    .common();
+    left: -60px;
+    .prev {
+      .common_icon_style();
+    }    
+  }
+  .btn_next { 
+    .common();
+    right: -60px;
+    .next {
+      .common_icon_style();
+      
+    }
+  }
+
+  // 轮播指示点
+  & > div > div > ul > li {
+    background-color: #c7c7c7;
+  }
+  :global(.ant-carousel .slick-dots li.slick-active button) {
+    background-color: #0079FE; 
+  }
+  :global(.ant-carousel .slick-dots-bottom ) {
+    // bottom: 0px;
+  }
+  
+}
