@@ -1,0 +1,44 @@
+.chart_container {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+    
+  .legend {
+    position: absolute;
+    left: 0;
+    top: 0;
+    //
+    display: flex;
+    align-items: center;
+    .color_block {
+      height: 2px;
+      width: 12px;
+    }
+    .color_block_red {
+      .color_block();
+      background-color: #FF6F0E;
+    }
+    .color_block_green {
+      .color_block();
+      background-color: rgba(0,128,0, 1);
+    }
+    & > span {
+      margin-left: 8px;
+      margin-right: 24px;
+      font-size: 12px;
+      line-height: 14px;
+    }
+  }
+
+  .draw_line_chart_background {
+    // background-image:
+    // linear-gradient(90deg, rgba(50, 0, 0, 0.05) 3%, rgba(0, 0, 0, 0) 0%),
+    // linear-gradient(360deg, rgba(50, 0, 0, 0.05) 3%, rgba(0, 0, 0, 0) 0%);
+    // background-size: 20px 20px;
+
+    display: inline-block;
+    background-color: #fff;
+  }
+
+}
