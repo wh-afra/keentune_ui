@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef, memo } from 'react';
-import { Button, Tooltip, message } from 'antd';
+import { Button, Tooltip, message, Empty } from 'antd';
 import { request, history } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
@@ -36,9 +36,14 @@ export default memo(({ dataSource =[] }: any) => {
         横轴为调优轮次，纵轴为消耗的时间；分为算法运行时间algorithm time和benchmark运行时间benchmark time；二者量纲可能不同，所以需要两个y轴；y轴侧面正态拟合图为选做
       </p>
 
-      <LineChart dataSource={dataSource}/>
+      {dataSource.length ?
+        <LineChart dataSource={dataSource}/>
+        :
+        <div className={styles.no_result}><Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /></div>
+      }
     </PageContainer>
   );
+
 }, (preProps, nextProps) => {
   // 判断逻辑
   if (preProps.dataSource !== nextProps.dataSource) {

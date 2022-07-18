@@ -31,8 +31,8 @@ export default (props: any): React.ReactNode => {
   const resultCsv = async (q: string)=> {
     setChartLoading(true);
     try {
-      let resultCsv = await request(q + '/sensi_result.csv', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)} })
-      setChartData(resultCsv)
+      const result = await request(q + '/sensi_result.csv', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)} })
+      setChartData(result)
       setChartLoading(false);
     } catch (err) {
       setChartLoading(false);
@@ -41,15 +41,15 @@ export default (props: any): React.ReactNode => {
 
   // 表格数据
   const knobsJson = async (q: any)=> {
-    setTableLoading(true);
+    // setTableLoading(true);
     try {
-      let knobsRes = await request(q + '/knobs.json', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)}})
+      const knobsRes = await request(q + '/knobs.json', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)}})
       // let resultCsv = await request(q + '/sensi_result.csv', { skipErrorHandler: true, })
       // const tempResult = resultDealWith(resultCsv)
       // 数据重组
       //knobsRes = resetData(knobsRes, tempResult)
       setDataSource(knobsRes)
-      setTableLoading(false);
+      //setTableLoading(false);
     } catch (err) {
       setTableLoading(false);
     }
@@ -74,4 +74,4 @@ export default (props: any): React.ReactNode => {
       <SensitivityTable data={dataSource} loading={tableLoading} resultCsv={chartData} />
     </div>
   );
-};
+}
