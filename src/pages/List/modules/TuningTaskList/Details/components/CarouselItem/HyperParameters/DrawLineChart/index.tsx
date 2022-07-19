@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Space } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
 import styles from './index.less';
 
@@ -34,7 +35,7 @@ Vector2.prototype = {
  * @param height canvas高
  */
 export default (props: any) => {
-  const { width=1150, knobs=[], points=[],score=[], } = props;
+  const { width=1250, knobs=[], points=[],score=[], } = props;
   // console.log('score:',  score )
 
   const [canvasHeight, setCanvasHeight]: any = useState(null)
@@ -56,7 +57,7 @@ export default (props: any) => {
   
 
   // 设置数据
-  const lineHight = 60; // 间距设置
+  const lineHight = 80; // 间距设置
   const lineStartX = 260 // 横线起点x坐标
   const lineLength = 800 // 横线长度
   
@@ -243,7 +244,8 @@ export default (props: any) => {
   // ----------------------
   
   function getControlPoint(path: any) {
-    let rt = 0.2;
+    // 曲率
+    let rt = 0.1;
     let count = path.length - 2;
     let arr = [];
     for (let i = 0; i < count; i++) {
@@ -277,10 +279,17 @@ export default (props: any) => {
   return (
     <div className={styles.chart_container} style={{height: canvasHeight + 60}}>
       <div className={styles.legend}>
-          <div className={styles.color_block_red}/>
-          <span>超过baseline的均值</span>
-          <div className={styles.color_block_green}/>
-          <span>低于baseline的均值</span>
+        {[{color: 'rgb(246,111,105)', text: 'Top 10%'}, 
+          {color: 'rgb(254,179,174)', text: 'Top 10%~30%'}, 
+          {color: 'rgb(255,194,75)', text: 'Top 30%~70%'}, 
+          {color: 'rgb(21,151,165)', text: 'Top 70%~90%'}, 
+          {color: 'rgb(14,96,107)', text: 'last 10%'},
+        ].map((item: any, i: any)=>
+          <>
+            <div className={styles.color_block} style={{background: item.color}}/>
+            <span>{item.text}</span>
+          </>
+        )}
       </div>
        
       <div className={styles.draw_line_chart_background}>

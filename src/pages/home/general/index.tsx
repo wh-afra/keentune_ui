@@ -7,8 +7,8 @@ import styles from './index.less';
 
 export default () => {
   // 判断用户是否已下载插件
-  const [tunDownloaded, setTunDownloaded] = useState(true); // false
-  const [senDownloaded, setSenDownloaded] = useState(true); // false
+  const [tunDownloaded, setTunDownloaded] = useState(true); //false 
+  const [senDownloaded, setSenDownloaded] = useState(true); //false 
 
   const Template = ({ route = '', logo = '', title = '', text = '', imgStyle = {} }) => (
     <div

@@ -21,9 +21,10 @@ export default ({ dataSource = []})=> {
   //   { y: 'North America', min: 3, Q1: 10, median: 17, Q3: 28, max: 30 },
   // ];
 
-  const list: any = dataSource.sort((a: any, b: any)=> b.max - a.max)
-  const maxValue = list.length? list[0]?.max: 0
-
+  // 是根据 max排序呢，还是均值排序 ？
+  // const list: any = dataSource.sort((a: any, b: any)=> b.max - a.max)
+  dataSource.reverse()
+  
   const dv = new DataView().source(dataSource);
   dv.transform({
     type: 'map',
@@ -83,7 +84,7 @@ export default ({ dataSource = []})=> {
     
       <Schema
         position={'range*y'}
-        size={8} // 配置图形的宽度 100
+        size={50} // 配置图形的宽度 100
         shape="box"
         style={{
           stroke: '#545454',

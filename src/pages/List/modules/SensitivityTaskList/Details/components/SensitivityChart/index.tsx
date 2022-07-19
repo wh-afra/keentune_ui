@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, memo } from 'react';
 import { Spin } from 'antd';
 import PageContainer from '@/components/public/PageContainer';
 import { resultSensitivityChart } from '../../../dataDealWith';
@@ -20,4 +20,4 @@ export default ({ data ='', loading = false }) => {
       </Spin>
     </PageContainer>
   );
-};
+}
