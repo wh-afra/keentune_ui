@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Alert, Breadcrumb, message } from 'antd';
 import { FormattedMessage, useIntl, request } from 'umi';
 import PageContainer from '@/components/public/PageContainer';
@@ -41,7 +41,7 @@ export default (props: any): React.ReactNode => {
 
   // 表格数据
   const knobsJson = async (q: any)=> {
-    // setTableLoading(true);
+    setTableLoading(true);
     try {
       const knobsRes = await request(q + '/knobs.json', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)}})
       // let resultCsv = await request(q + '/sensi_result.csv', { skipErrorHandler: true, })
@@ -49,7 +49,7 @@ export default (props: any): React.ReactNode => {
       // 数据重组
       //knobsRes = resetData(knobsRes, tempResult)
       setDataSource(knobsRes)
-      //setTableLoading(false);
+      setTableLoading(false);
     } catch (err) {
       setTableLoading(false);
     }
@@ -69,9 +69,9 @@ export default (props: any): React.ReactNode => {
         <Breadcrumb.Item>敏感参数识别任务页面</Breadcrumb.Item>
       </Breadcrumb>
 
-      <BasicInfo data={query} />
-      <SensitivityChart data={chartData} loading={chartLoading} />
-      <SensitivityTable data={dataSource} loading={tableLoading} resultCsv={chartData} />
+      {useMemo(()=> <BasicInfo data={query} />, [query])}
+      {useMemo(()=> <SensitivityChart data={chartData} loading={chartLoading} />, [chartData, chartLoading])}
+      {useMemo(()=> <SensitivityTable data={dataSource} loading={tableLoading} resultCsv={chartData} />, [dataSource, tableLoading, chartData])}
     </div>
   );
 }

@@ -57,7 +57,7 @@ export default (props: any) => {
   
 
   // 设置数据
-  const lineHight = 60; // 间距设置
+  const lineHight = 80; // 间距设置
   const lineStartX = 260 // 横线起点x坐标
   const lineLength = 800 // 横线长度
   
