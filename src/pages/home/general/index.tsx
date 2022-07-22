@@ -2,13 +2,13 @@ import list_2 from '@/assets/list_2.png';
 import list_3 from '@/assets/list_3.png';
 import list_4 from '@/assets/list_4.jpg';
 import { useState } from 'react';
-import { history } from 'umi';
+import { FormattedMessage, useIntl, history } from 'umi';
 import styles from './index.less';
 
 export default () => {
   // 判断用户是否已下载插件
-  const [tunDownloaded, setTunDownloaded] = useState(true); //false 
-  const [senDownloaded, setSenDownloaded] = useState(true); //false 
+  const [tunDownloaded, setTunDownloaded] = useState(false); //true 
+  const [senDownloaded, setSenDownloaded] = useState(false); //true 
 
   const Template = ({ route = '', logo = '', title = '', text = '', imgStyle = {} }) => (
     <div
@@ -35,8 +35,9 @@ export default () => {
       {/** 下载提示 */}
       <div className={styles.mask_layout}>
         <div className={styles.mask_context}>
-          <div className={styles.text}>插件下载说明</div>
-          <div className={styles.button}>操作文档链接</div>
+          <div className={styles.text}><FormattedMessage id="home.general.tips"/></div>
+          <div className={styles.text_en}><FormattedMessage id="home.general.tips.en"/></div>
+          {/* <div className={styles.button}>操作文档链接</div> */}
         </div>
       </div>
     </div>
