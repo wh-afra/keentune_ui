@@ -9,7 +9,7 @@
 export default {
   dev: {
     '/var': {
-      target: 'http://39.102.55.119:8082',
+      target: 'http://121.43.179.166:8082',
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
