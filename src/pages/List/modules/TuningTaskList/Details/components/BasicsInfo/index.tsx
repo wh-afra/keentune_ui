@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Tooltip, message, Row, Col, Tag } from 'antd';
 import { request, history } from 'umi';
-import { RightOutlined, DownOutlined, InfoCircleOutlined } from '@ant-design/icons';
+import { RightOutlined, DownOutlined, InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 //
 import PageContainer from '@/components/public/PageContainer';
 import PopoverEllipsis from '@/components/public/PopoverEllipsis';
 import LogModal from '@/pages/List/LogModal'
 import { requestData } from '@/services/index';
+import Clipboard from 'clipboard'
 import { useClientSize, dataDealWith, viewDetails } from '@/uitls/uitls'
 import styles from './index.less';
 
@@ -32,17 +33,35 @@ export default ({ data = {}, algorithmRunTime }: any) => {
     }
   }
 
-  const RowItem = ({ label, value, span=12, valueWidth=300, linkTo='', onClick='' }: any) => {
+  const RowItem = ({ label, value, span=12, valueWidth=300, linkTo='', onClick='', onCopy }: any) => {
     return <Col span={span}>
       <div className={styles.tag_container}>
         <Tag className={styles.tag} >{label}</Tag>
         <div className={styles.tag_value}>
           <PopoverEllipsis title={value} width={valueWidth} linkTo={linkTo} onClick={onClick}/>
         </div>
+        {onCopy? <span onClick={onCopy} id="copy_link"><CopyOutlined style={{color:'#1890ff',cursor:'pointer'}}/></span>: null}
       </div>
     </Col>
   }
-  
+
+  const copyText = (text: string) => {
+    const clipboard = new Clipboard('#copy_link', {
+      text: function() {
+        return text;
+      },
+    })
+    clipboard.on('success', function (e: any) {
+      e.clearSelection();
+      clipboard.destroy()
+    })
+    clipboard.on("error", function(e){
+      clipboard.destroy(); 
+    });
+  }
+
+  const cmdStr = data.cmd?.replaceAll('\\n', '\\')
+
   return (
     <div className={styles.basicInfo_root} onClick={()=> /* setExpanded(!expanded) */ {} }>
       <PageContainer title="基本信息" style={{ marginTop:20,padding:'30px 42px',position:'relative'}}>
@@ -62,7 +81,7 @@ export default ({ data = {}, algorithmRunTime }: any) => {
               <RowItem label="StartTime"  value={data.start_time} />
               <RowItem label="EndTime"  value={data.end_time} />
               <RowItem label="Algorithm Running Time"  value={algorithmRunTime} />
-              <RowItem label="命令行"  value={data.cmd} valueWidth={450}/>
+              <RowItem label="命令行"  value={cmdStr} valueWidth={450} onCopy={()=> copyText(cmdStr)}/>
               <RowItem label="任务日志"  value={data.log} linkTo={data.log} /*onClick={()=> viewDetails(data.log, data.log)}*/ />
             {/* </Row>
             <div className={styles.divider_line}></div>

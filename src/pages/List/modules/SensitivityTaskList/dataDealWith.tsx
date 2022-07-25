@@ -82,13 +82,15 @@ export const resultSensitivityChart = (data: string) => {
       }
     });
 
-    // 降序排序后，取绝对值和值范内在: 85% 的数据
+    // case1. 降序排序后，取绝对值和值范内在: 85%的数据
     dataSource.sort((a: any, b: any)=> Math.abs(b.avg)- Math.abs(a.avg))
     let absSum = 0
-    let dataSet = dataSource.filter((item: any)=> { 
+    let dataSet = dataSource.filter((item: any)=> {
       if (absSum <= 0.85 ) { absSum = absSum + Math.abs(item.avg); return true }
       return false
     })
+    // case2. 如果说绝对值的和没达到0.85，但数量已达到15个时，就只展示这15个。
+    dataSet = dataSet.slice(0, 15)
     return dataSet
   }
   return dataSource
