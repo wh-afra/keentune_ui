@@ -11,7 +11,7 @@ const defaultBench = `[bench-group-1]
 BENCH_SRC_IP = localhost
 BENCH_DEST_IP = localhost
 BENCH_SRC_PORT = 9874
-BENCH_CONFIG = bench_wrk_nginx_long.json`;
+BENCH_CONFIG = wrk_http_long.json`;
 const defaultTarget = `[target-group-1]
 TARGET_IP = localhost
 TARGET_PORT = 9873
@@ -113,15 +113,13 @@ export default forwardRef((props: any, ref: any) => {
     form
       .validateFields()
       .then(async (values) => {
-        const { name, iteration, benchmarkGroup, targetGroup } = values;
+        const { name, iteration } = values;
 
         const cmd = `keentune param tune -j ${name}  -i ${iteration}  --config "
       ALGORITHM = ${values.algorithm}
       BASELINE_BENCH_ROUND = ${values.baseline_bench_round}
       TUNING_BENCH_ROUND = ${values.tuning_bench_round}
-      RECHECK_BENCH_ROUND = ${values.recheck_bench_round}
-      ${benchmarkGroup}
-      ${targetGroup}"`;
+      RECHECK_BENCH_ROUND = ${values.recheck_bench_round}"`;
 
         const res = await requestData('POST', '/cmd', { cmd });
         if (res.suc) {
@@ -142,19 +140,20 @@ export default forwardRef((props: any, ref: any) => {
     initialStatus();
   };
   const handleOk = () => {
-    if (!showExample && !showTargetExample) {
-      getFormData();
-    } else {
-      setShowExample(0);
-      setShowTargetExample(0);
-    }
+    getFormData();
+    // if (!showExample && !showTargetExample) {
+    //   getFormData();
+    // } else {
+    //   setShowExample(0);
+    //   setShowTargetExample(0);
+    // }
   };
   // hooks状态异步执行方式
-  useEffect(() => {
-    if (showExample === 0 && showTargetExample === 0) {
-      getFormData();
-    }
-  }, [showExample, showTargetExample]);
+  // useEffect(() => {
+  //   if (showExample === 0 && showTargetExample === 0) {
+  //     getFormData();
+  //   }
+  // }, [showExample, showTargetExample]);
 
   // 校验name重名
   const validatorName = (_: any, value: any) => {
@@ -171,59 +170,59 @@ export default forwardRef((props: any, ref: any) => {
   };
 
   // 校验文本域内容格式
-  const validFunction = (_: any, value: any) => {
-    if (!value) {
-      return Promise.resolve();
-    }
-    const list = value.split('\n');
+  // const validFunction = (_: any, value: any) => {
+  //   if (!value) {
+  //     return Promise.resolve();
+  //   }
+  //   const list = value.split('\n');
 
-    // 校验每一行的格式
-    let validate = true;
-    let row = 0;
-    for (let item of list) {
-      ++row;
-      if (item.trim() === '') {
-        validate = true;
-      } else if (item.match(/^\[.*?\]$/g)) {
-        validate = true;
-      } else if (
-        item.trim().split('=')?.length === 2 &&
-        item.trim().split('=')[0] &&
-        item.trim().split('=')[1]
-      ) {
-        validate = true;
-      } else {
-        validate = false;
-        break;
-      }
-    }
-    return validate
-      ? Promise.resolve()
-      : Promise.reject(
-          new Error(
-            `${formatMessage({ id: 'ProfileList.validateInfo1' })} ${row} ${formatMessage({
-              id: 'ProfileList.validateInfo2',
-            })}`,
-          ),
-        );
-  };
+  //   // 校验每一行的格式
+  //   let validate = true;
+  //   let row = 0;
+  //   for (let item of list) {
+  //     ++row;
+  //     if (item.trim() === '') {
+  //       validate = true;
+  //     } else if (item.match(/^\[.*?\]$/g)) {
+  //       validate = true;
+  //     } else if (
+  //       item.trim().split('=')?.length === 2 &&
+  //       item.trim().split('=')[0] &&
+  //       item.trim().split('=')[1]
+  //     ) {
+  //       validate = true;
+  //     } else {
+  //       validate = false;
+  //       break;
+  //     }
+  //   }
+  //   return validate
+  //     ? Promise.resolve()
+  //     : Promise.reject(
+  //         new Error(
+  //           `${formatMessage({ id: 'ProfileList.validateInfo1' })} ${row} ${formatMessage({
+  //             id: 'ProfileList.validateInfo2',
+  //           })}`,
+  //         ),
+  //       );
+  // };
 
-  const label_Benchmark = (
-    <div className={styles.variableLabel}>
-      <span>Benchmark group 配置</span>
-      <span className={styles.Bulk_btn} onClick={() => setShowExample(!showExample)}>
-        {showExample ? '填写' : '示例'}
-      </span>
-    </div>
-  );
-  const label_Target = (
-    <div className={styles.variableLabel}>
-      <span>Target group 配置</span>
-      <span className={styles.Bulk_btn} onClick={() => setShowTargetExample(!showTargetExample)}>
-        {showTargetExample ? '填写' : '示例'}
-      </span>
-    </div>
-  );
+  // const label_Benchmark = (
+  //   <div className={styles.variableLabel}>
+  //     <span>Benchmark group 配置</span>
+  //     <span className={styles.Bulk_btn} onClick={() => setShowExample(!showExample)}>
+  //       {showExample ? '填写' : '示例'}
+  //     </span>
+  //   </div>
+  // );
+  // const label_Target = (
+  //   <div className={styles.variableLabel}>
+  //     <span>Target group 配置</span>
+  //     <span className={styles.Bulk_btn} onClick={() => setShowTargetExample(!showTargetExample)}>
+  //       {showTargetExample ? '填写' : '示例'}
+  //     </span>
+  //   </div>
+  // );
   return (
     <Modal
       title={
@@ -256,8 +255,8 @@ export default forwardRef((props: any, ref: any) => {
             baseline_bench_round: 1,
             tuning_bench_round: 1,
             recheck_bench_round: 1,
-            benchmarkGroup: defaultBench,
-            targetGroup: defaultTarget,
+            // benchmarkGroup: defaultBench,
+            // targetGroup: defaultTarget,
           }}
         >
           <Row gutter={16}>
@@ -360,7 +359,7 @@ export default forwardRef((props: any, ref: any) => {
             </Col>
           </Row>
 
-          {showExample ? (
+          {/* {showExample ? (
             <Form.Item
               label={label_Benchmark}
               name="var"
@@ -400,7 +399,7 @@ export default forwardRef((props: any, ref: any) => {
             >
               <Input.TextArea rows={6} placeholder="按格式填写" allowClear onChange={() => {}} />
             </Form.Item>
-          )}
+          )} */}
         </Form>
       </Spin>
     </Modal>

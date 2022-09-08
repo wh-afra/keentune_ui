@@ -218,7 +218,9 @@ export default () => {
             total: listPage.total,
             size: "default",
             showSizeChanger: true,
-            showTotal: (total, range) => { return `${formatMessage({id: 'total'})} ${total} ${formatMessage({id: 'records'})} ${listPage.pageNum} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({id: 'page'})}`},
+            showTotal: (total, range) => {
+              return formatMessage({id: 'pagination.total.strip'}, {total: total, pageNum: listPage.pageNum, pageSize: Math.ceil(total / listPage.pageSize) })
+            },
             onChange: (page, pageSize) => { 
               const tempPage = pageSize !== listPage.pageSize? 1 : page
               getTableData({ pageNum: tempPage, pageSize })

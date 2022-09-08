@@ -1,7 +1,7 @@
 import { Space } from 'antd';
-import { QuestionCircleOutlined } from '@ant-design/icons';
+import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useModel,  } from 'umi'; // SelectLang
+import { useModel, history } from 'umi'; // SelectLang
 import SelectLang from './SelectLang';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
@@ -23,9 +23,12 @@ const GlobalHeaderRight: React.FC = () => {
   }
   return (
     <Space className={className}>
-
       {/* 国际化方案 */}
       <SelectLang className={styles.action} />
+
+      <div className={styles.setting}>
+        <SettingOutlined onClick={()=> { history.push('/settings') }}/>
+      </div>
     </Space>
   );
 };

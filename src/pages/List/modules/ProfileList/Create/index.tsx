@@ -177,11 +177,11 @@ export default forwardRef((props: any, ref: any) => {
               <Form.Item label="Profile Name"
                 name="name"
                 rules={[
-                  {required: true, message: formatMessage({id: 'Input.placeholder'})},
+                  {required: true, message: formatMessage({id: 'please.enter'})},
                   {validator: validatorName }
                 ]}
               >
-                <Input placeholder={formatMessage({id:'Input.placeholder'})} addonAfter=".conf" autoComplete="off" />
+                <Input placeholder={formatMessage({id:'please.enter'})} addonAfter=".conf" autoComplete="off" />
               </Form.Item>
              
               {showTargetExample?
@@ -258,7 +258,7 @@ net.ipv4.tcp_max_tw_buckets : 360000
               className={styles.last_form_Item}
               name="info"
               rules={[
-                {required: true, message: formatMessage({id: 'Input.placeholder'})},
+                {required: true, message: formatMessage({id: 'please.enter'})},
                 {validator: validatorFn }
               ]}
             >

@@ -158,6 +158,12 @@ export default () => {
       case 'stop':
         cmdOperation({ cmd: `keentune param stop` }, key);
         break;
+      case 'rollback':
+        cmdOperation({ cmd: `keentune param rollback` }, key);
+        break;
+      case 'dump':
+        cmdOperation({ cmd: `keentune param dump --force --job ${row.name}` }, key);
+        break;
       default:
         null;
     }
@@ -290,28 +296,31 @@ export default () => {
       title: 'Operations',
       key: 'option',
       valueType: 'option',
-      render: (text: any, record: any) => [
-        <TableDropdown
-          key="actionGroup"
-          onSelect={(key) => {
-            fn(key, record);
-          }}
-          menus={
-            record.status === 'running'
-              ? [
-                  { key: 'details', name: 'Details', className: 'menus_item_default' },
-                  { key: 'log', name: 'Log', className: 'menus_item_default' },
-                  { key: 'stop', name: 'Stop', className: 'menus_item_default' },
-                ]
-              : [
-                  { key: 'details', name: 'Details', className: 'menus_item_default' },
-                  { key: 'log', name: 'Log', className: 'menus_item_default' },
-                  { key: 'rerun', name: 'Rerun', className: 'menus_item_default' },
-                  { key: 'delete', name: 'Delete', className: 'menus_item_danger' },
-                ]
-          }
-        />,
-      ],
+      render: (text: any, record: any) => {
+        const not_finish = record.status !== 'finish'
+        return ([
+          <TableDropdown
+            key="actionGroup"
+            onSelect={(key) => fn(key, record)}
+            menus={
+              record.status === 'running'
+                ? [
+                    { key: 'details', name: 'Details', className: 'menus_item_default' },
+                    { key: 'log', name: 'Log', className: 'menus_item_default' },
+                    { key: 'stop', name: 'Stop', className: 'menus_item_default' },
+                  ]
+                : [
+                    { key: 'details', name: 'Details', className: 'menus_item_default' },
+                    { key: 'log', name: 'Log', className: 'menus_item_default' },
+                    { key: 'rollback', name: 'Rollback', className: `menus_item_${not_finish? 'disable': 'default'}`, disabled: not_finish },
+                    { key: 'dump', name: 'Dump', className: `menus_item_${not_finish? 'disable': 'default'}`, disabled: not_finish },
+                    { key: 'rerun', name: 'Rerun', className: 'menus_item_default' },
+                    { key: 'delete', name: 'Delete', className: 'menus_item_danger' },
+                  ]
+            }
+          />,
+        ])
+      },
       className: 'table-operate-dropdown-style',
       align: 'center',
     },

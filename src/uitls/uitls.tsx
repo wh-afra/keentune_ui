@@ -56,17 +56,26 @@ export const useClientSize = () => {
  */
 export const dataDealWith = (data: string) => {
     const list = data && data.split('\n')
-    // console.log('list:', list)
     const titleSet = list[0].split(',').map((item: any)=> item.toLowerCase())
-    // console.log('titleSet:', titleSet)
 
     let dataSource = []
     if (Array.isArray(list)) {
         dataSource = list?.slice(1)?.filter((key: any)=> key).map((item: any, index: any)=> {
         let row: any = {}
-        item.split(',').forEach((value: any, i: any) => {
+
+        let tempStr=''
+        const flag = '__SPECIAL__'
+        let specialStr = ''
+        if (item.indexOf(',"') !== -1 ) {
+          specialStr = item.slice(item.indexOf(',"')+1, item.indexOf('",') + 1)
+          tempStr = item.replace(specialStr, flag)
+        } else {
+          tempStr = item
+        }
+        
+        tempStr.split(',').forEach((value: any, i: any) => {
             row.id = index + 1
-            row[titleSet[i]] = value
+            row[titleSet[i]] = (value === flag ? specialStr.replaceAll('"', '') : value)
         });
         return row
         })

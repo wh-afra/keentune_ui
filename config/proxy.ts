@@ -6,25 +6,32 @@
  * For details, please see
  * https://pro.ant.design/docs/deploy
  */
+const url = 'http://121.43.179.166:8082' // 'http://39.102.55.119:8082',
+
 export default {
   dev: {
     '/var': {
-      target: 'http://121.43.179.166:8082', //'http://39.102.55.119:8082',
+      target:  'https://anolis-service-daily.oss-cn-zhangjiakou.aliyuncs.com', // url,
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
     '/cmd': {
-      target: 'http://121.43.179.166:8082', 
+      target: url,
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
     '/read': {
-      target: 'http://39.102.55.119:8082',
+      target: url,
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
     '/etc': {
-      target: 'http://39.102.55.119:8082',
+      target: url,
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
+    '/write': {
+      target: url,
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

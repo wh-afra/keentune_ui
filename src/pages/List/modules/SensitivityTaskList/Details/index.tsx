@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Card, Alert, Breadcrumb, message } from 'antd';
 import { FormattedMessage, useIntl, request } from 'umi';
 import PageContainer from '@/components/public/PageContainer';
@@ -31,8 +31,8 @@ export default (props: any): React.ReactNode => {
   const resultCsv = async (q: string)=> {
     setChartLoading(true);
     try {
-      let resultCsv = await request(q + '/sensi_result.csv', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)} })
-      setChartData(resultCsv)
+      const result = await request(q + '/sensi_result.csv', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)} })
+      setChartData(result)
       setChartLoading(false);
     } catch (err) {
       setChartLoading(false);
@@ -43,7 +43,7 @@ export default (props: any): React.ReactNode => {
   const knobsJson = async (q: any)=> {
     setTableLoading(true);
     try {
-      let knobsRes = await request(q + '/knobs.json', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)}})
+      const knobsRes = await request(q + '/knobs.json', { skipErrorHandler: true, params: { q: Math.random()*(1000+1)}})
       // let resultCsv = await request(q + '/sensi_result.csv', { skipErrorHandler: true, })
       // const tempResult = resultDealWith(resultCsv)
       // 数据重组
@@ -69,9 +69,9 @@ export default (props: any): React.ReactNode => {
         <Breadcrumb.Item>敏感参数识别任务页面</Breadcrumb.Item>
       </Breadcrumb>
 
-      <BasicInfo data={query} />
-      <SensitivityChart data={chartData} loading={chartLoading} />
-      <SensitivityTable data={dataSource} loading={tableLoading} resultCsv={chartData} />
+      {useMemo(()=> <BasicInfo data={query} />, [query])}
+      {useMemo(()=> <SensitivityChart data={chartData} loading={chartLoading} />, [chartData, chartLoading])}
+      {useMemo(()=> <SensitivityTable data={dataSource} loading={tableLoading} resultCsv={chartData} />, [dataSource, tableLoading, chartData])}
     </div>
   );
-};
+}

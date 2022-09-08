@@ -59,7 +59,12 @@
       },
     ],
   },
-
+  {
+    path: '/settings',
+    name: 'settings',
+    hideInMenu: true,
+    component: './Settings',
+  },
   {
     path: '/',
     redirect: './home',

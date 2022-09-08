@@ -58,25 +58,41 @@ export const resultSensitivityChart = (data: string) => {
   if (Array.isArray(list)) {
     const nameList = list[0]
     const dataList = list.slice(1)
+    // console.log(nameList)
+
     // 计算均值
     dataSource = nameList.map((name: any, i: any) => {
-
       let row = [];
+      let count = 0;
       for (let n=0; n<dataList.length; n++) {
-        row.push(Number(dataList[n][i])) 
+        row.push(Number(dataList[n][i]))
+        count = count + Number(dataList[n][i])
       }
       row.sort((a, b) => a - b)
-      //
-      // const Q1 = Math.ceil( ((row[row.length -1] - row[0]) /4 + row[0]) * 10000 )/10000
+      
       const median = row[Math.floor(row.length / 2)]
-      // const Q3 = Math.floor( ((row[row.length -1] - row[0]) /4*3 + row[0])* 10000)/10000
-      const Q1 = (row[row.length -1] - row[0]) /4*1 + row[0]
-      const Q3 = (row[row.length -1] - row[0]) /4*3 + row[0]
-      return { y: name, min: row[0], Q1, median, Q3, max: row[row.length -1] }
+      const Q1 = row[Math.floor(row.length / 4)]
+      const Q3 = row[Math.floor(row.length / 4 * 3)]
+      return { 
+        y: name, 
+        min: row[0], 
+        Q1, median, Q3, 
+        max: row[row.length -1],
+        avg: Number((count * 100 /dataList.length/ 100).toFixed(2))
+      }
     });
-    
+
+    // case1. 降序排序后，取绝对值和值范内在: 85%的数据
+    dataSource.sort((a: any, b: any)=> Math.abs(b.avg)- Math.abs(a.avg))
+    let absSum = 0
+    let dataSet = dataSource.filter((item: any)=> {
+      if (absSum <= 0.85 ) { absSum = absSum + Math.abs(item.avg); return true }
+      return false
+    })
+    // case2. 如果说绝对值的和没达到0.85，但数量已达到15个时，就只展示这15个。
+    dataSet = dataSet.slice(0, 15)
+    return dataSet
   }
-  // console.log('dataSource:', dataSource)
   return dataSource
 }
 
@@ -103,11 +119,9 @@ export const resultDoubleBoxChart = (data: string, groupName: string) => {
       }
       row.sort((a, b) => a - b)
       //
-      // const Q1 = Math.ceil( ((row[row.length -1] - row[0]) /4 + row[0]) * 10000 )/10000
       const median = row[Math.floor(row.length / 2)]
-      // const Q3 = Math.floor( ((row[row.length -1] - row[0]) /4*3 + row[0])* 10000)/10000
-      const Q1 = (row[row.length -1] - row[0]) /4*1 + row[0]
-      const Q3 = (row[row.length -1] - row[0]) /4*3 + row[0]
+      const Q1 = row[Math.floor(row.length / 4)]
+      const Q3 = row[Math.floor(row.length / 4 * 3)]
       return { y: name, min: row[0], Q1, median, Q3, max: row[row.length -1], groupName }
     });
     

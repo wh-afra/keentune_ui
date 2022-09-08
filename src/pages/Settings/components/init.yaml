@@ -1,0 +1,42 @@
+brain: 
+  ip: localhost
+  algo_sensi:
+    - lasso
+    - shap
+  algo_tuning:
+    - tpe
+    - hord
+    - random
+
+bench: 
+  - 
+    ip: localhost
+    destination: 172.16.1.187
+    benchmark: wrk_https_short.json
+  - 
+    ip: 172.16.1.186
+    destination: 172.16.1.185
+    benchmark: wrk_https_long.json
+
+target: 
+  - 
+    ip: 172.16.1.187
+    knobs:
+      - sysctl.json
+    domain: 
+      - sysctl
+      - nginx
+  - 
+    ip: 172.16.1.186
+    knobs:
+      - sysctl.json
+    domain: 
+      - nginx
+  - 
+    ip: 172.16.1.185
+    domain: 
+      - sysctl
+  - 
+    ip: ~
+    domain: ~
+    

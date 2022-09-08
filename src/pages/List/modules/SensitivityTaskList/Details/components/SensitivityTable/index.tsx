@@ -21,8 +21,6 @@ export default ({ data=[], loading=false, resultCsv }: any) => {
   // console.log('dataSource', dataSource)
   const [dataSource, setDataSource] = useState<any>([])
 
-
-
   useEffect(()=> {
     if (resultCsv && data.length) {
       // 计算平均值

@@ -39,9 +39,12 @@ export default {
   'btn.ok': '确定',
   'btn.confirm': '确认',
   'btn.update': '更新',
-  'Input.placeholder': '请输入',
+
+  'please.select': '请选择',
+  'please.enter': '请输入',
   'Input.rules.message': '仅允许包含字母、数字、下划线、中划线、点，最长32个字符',
   // 分页
+  'pagination.total.strip': '共 {total} 条记录 第 {pageNum} / {pageSize} 页',
   'total': '共',
   'records': '条记录 第',
   'page': '页',

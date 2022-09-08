@@ -12,11 +12,10 @@
 }
 
 .right {
-  display: flex;
   float: right;
-  // height: 48px;
+  display: flex;
   margin-left: auto;
-  overflow: hidden;
+   
   .action {
     display: flex;
     align-items: center;
@@ -34,6 +33,17 @@
       background: @pro-header-hover-bg;
     }
   }
+  .setting {
+    font-size: 32px;
+    color: #594c65ba;
+    cursor: pointer;
+    margin-right: -32px;
+    padding-left: 10px;
+    &:hover {
+      color: #1890ff;
+    }
+  }
+
   .search {
     padding: 0 12px;
     &:hover {

@@ -68,7 +68,8 @@
   }
 
   .position_img {
-    position: absolute; top:20px; right:84px;
+    position: absolute; top:20px; right:31px;
+    display: flex;
     .action {
       display: flex;
       align-items: center;
@@ -85,6 +86,15 @@
       &:global(.opened) {
         background: @pro-header-hover-bg;
       }
+    }
+    .setting {
+      font-size: 32px;
+      margin-left: 24px;
+      color: #594c65ba;
+      cursor: pointer;
+    }
+    .setting:hover {
+      color: #1890ff;
     }
   }
 

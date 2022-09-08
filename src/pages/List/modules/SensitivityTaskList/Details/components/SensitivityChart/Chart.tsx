@@ -12,6 +12,7 @@ import {
 import { DataView } from '@antv/data-set';
 
 export default ({ dataSource = []})=> {
+  // console.log('dataSource:', dataSource)
   // dataSource = [
   //   { y: 'Oceania', min: 1, Q1: 9, median: 16, Q3: 22, max: 24 },
   //   { y: 'East Europe', min: 1, Q1: 5, median: 8, Q3: 12, max: 16 },
@@ -21,10 +22,11 @@ export default ({ dataSource = []})=> {
   //   { y: 'North America', min: 3, Q1: 10, median: 17, Q3: 28, max: 30 },
   // ];
 
-  const list: any = dataSource.sort((a: any, b: any)=> b.max - a.max)
-  const maxValue = list.length? list[0]?.max: 0
-
-  const dv = new DataView().source(dataSource);
+  // 是根据 max排序呢，还是均值排序 ？
+  // const list: any = dataSource.sort((a: any, b: any)=> b.max - a.max)
+  const dataSet = dataSource.reverse()
+  
+  const dv = new DataView().source(dataSet);
   dv.transform({
     type: 'map',
     callback: (obj: any) => {
@@ -32,6 +34,16 @@ export default ({ dataSource = []})=> {
       return obj;
     }
   });
+
+  const boxSize = (()=> {
+    const count = dataSource.length
+    if(count <= 10) return 60;
+    else if(count <= 20) return 30;
+    else if(count <= 30) return 20;
+    else if(count <= 40) return 10;
+    else if(count <= 50) return 6;
+    return 5;
+  })()
    
    return <Chart
      height={(dataSource.length * 50 + 100)}
@@ -83,7 +95,7 @@ export default ({ dataSource = []})=> {
     
       <Schema
         position={'range*y'}
-        size={8} // 配置图形的宽度 100
+        size={boxSize} // 配置图形的宽度50
         shape="box"
         style={{
           stroke: '#545454',

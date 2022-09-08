@@ -1,4 +1,5 @@
 import React from 'react';
+import { SettingOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
 import { useIntl, FormattedMessage, history } from 'umi';
@@ -35,6 +36,7 @@ export default (): React.ReactNode => {
 
       <div className={styles.position_img}>
         <SelectLang className={styles.action} />
+        <SettingOutlined className={styles.setting} onClick={()=> { history.push('/settings') }}/>
       </div>
     </div>
   );

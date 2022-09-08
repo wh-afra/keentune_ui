@@ -7,7 +7,7 @@ import 'codemirror/mode/shell/shell'
 import { Controlled as CodeMirror } from 'react-codemirror2'
 import styles from './index.less'
 
-export default ({ code , onChange, readOnly= true, lineNumbers= false, height = 372 } : any ) => {
+export default ({ code , onChange, readOnly= true, lineNumbers= false, height = 372, theme } : any ) => {
     const [statusCode, setStatusCode] = useState('')
     const codemirrorRef: any = useRef({});
 
@@ -33,7 +33,7 @@ export default ({ code , onChange, readOnly= true, lineNumbers= false, height = 
             value={ statusCode }
             className={ styles.code_wrapper}
             options={{
-                theme: 'monokai',
+                theme: theme || 'monokai', // neo、mdn-like、eclipse
                 keyMap: 'sublime',
                 mode : 'shell',
                 lineWrapping: true,

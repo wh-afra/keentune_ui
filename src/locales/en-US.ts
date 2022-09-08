@@ -30,9 +30,11 @@ export default {
   'btn.confirm': 'Confirm',
   'btn.update': 'Update',
 
-  'Input.placeholder': 'Please input',
+  'please.select': 'Please.select',
+  'please.enter': 'Please input',
   'Input.rules.message': 'Only letters, numbers, underscores, middle dashes and dots are allowed. The maximum length is 32 characters',
   // 分页
+  'pagination.total.strip': '{total} records page {pageNum} / {pageSize}',
   'total': ' ',
   'records': 'records page',
   'page': ' ',

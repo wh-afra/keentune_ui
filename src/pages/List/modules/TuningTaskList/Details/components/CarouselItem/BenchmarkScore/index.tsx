@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Button, Tooltip, message, Select } from 'antd';
+import { Button, Tooltip, message, Select, Empty } from 'antd';
 import { request, history } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
@@ -77,7 +77,11 @@ export default ({ data={} }: any) => {
         </Select>
       </div>
 
-      {!!dataSource.length && <LineChart data={dataSource} /> }
+      {dataSource.length ? 
+        <LineChart data={dataSource} />
+        :
+        <div className={styles.no_result}><Empty image={Empty.PRESENTED_IMAGE_SIMPLE} /></div>
+      }
     </PageContainer>
   );
 };

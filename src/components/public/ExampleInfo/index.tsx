@@ -2,7 +2,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './index.less'
 
-export const ExampleInfo = ({ content = '', rows = 4 }: any) => {
+export const ExampleInfo = ({ content = '', rows = 4, onlyShow, children, height, style= {}}: any) => {
   const ellipsis: any = useRef(null)
 	const [show, setShow] = useState(false)
 
@@ -18,8 +18,12 @@ export const ExampleInfo = ({ content = '', rows = 4 }: any) => {
   
   return (
     <div ref={ellipsis} className={styles.example_info} 
-      style={{ height: rows*22, overflowY: show? 'scroll': 'unset',}}>
-      <pre>{content}</pre>
+      style={{ 
+        height: height? height: rows*22, 
+        overflowY: show? 'scroll': 'unset',
+        ...style,
+      }}>
+        {onlyShow ? children : <pre>{content}</pre>}
     </div>
   )
 }
