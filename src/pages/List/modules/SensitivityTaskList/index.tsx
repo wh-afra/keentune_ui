@@ -209,11 +209,11 @@ export default () => {
       dataIndex: 'trials',
       ellipsis: true,
     },
-    {
-      title: 'Epoch',
-      dataIndex: 'epoch',
-      ellipsis: true,
-    },
+    // {
+    //   title: 'Epoch',
+    //   dataIndex: 'epoch',
+    //   ellipsis: true,
+    // },
     {
       title: 'Start Time',
       dataIndex: 'start_time',

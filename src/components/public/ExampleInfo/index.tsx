@@ -13,7 +13,7 @@ export const ExampleInfo = ({ content = '', rows = 4, onlyShow, children, height
   const isEllipsis = () => {
 		const clientHeight = ellipsis.current.clientHeight
 		const scrollHeight = ellipsis.current.scrollHeight
-		setShow(clientHeight < scrollHeight)
+		setShow(clientHeight <= scrollHeight)
 	};
   
   return (

@@ -22,7 +22,7 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
-    <Space className={className}>
+    <Space className={className} size={16}>
       {/* 国际化方案 */}
       <SelectLang className={styles.action} />
 

@@ -115,20 +115,31 @@ export default forwardRef((props: any, ref: any) => {
       .then(async (values) => {
         const { name, iteration } = values;
 
-        const cmd = `keentune param tune -j ${name}  -i ${iteration}  --config "
-      ALGORITHM = ${values.algorithm}
-      BASELINE_BENCH_ROUND = ${values.baseline_bench_round}
-      TUNING_BENCH_ROUND = ${values.tuning_bench_round}
-      RECHECK_BENCH_ROUND = ${values.recheck_bench_round}"`;
+        // step1.更新keentuned.conf
+        const result = await requestData('POST', '/write', {
+          name: 'keentuned.conf', 
+          info: `[brain]\n
+          AUTO_TUNING_ALGORITHM   = ${values.algorithm}\n
+          [keentuned]\n
+          BASELINE_BENCH_ROUND    = ${values.baseline_bench_round}\n
+          TUNING_BENCH_ROUND      = ${values.tuning_bench_round}\n
+          RECHECK_BENCH_ROUND     = ${values.recheck_bench_round}`
+        });
 
-        const res = await requestData('POST', '/cmd', { cmd });
-        if (res.suc) {
-          // 重置状态 && 跳转页面
-          initialStatus();
-          props.callback();
+        if (result.suc) {
+          //step2.
+          const res = await requestData('POST', '/cmd', { cmd: `keentune param tune -j ${name}  -i ${iteration}` });
+          if (res.suc) {
+            // 重置状态 && 跳转页面
+            initialStatus();
+            props.callback();
+          } else {
+            handleRes(res, '请求错误');
+          }
         } else {
-          handleRes(res, '请求错误');
+          handleRes(result, '任务创建失败');
         }
+
         setLoading(false);
       })
       .catch((err) => {

@@ -13,8 +13,8 @@
     component: './List',
     routes: [
       {
-        path: '/list/static-page',
-        name: 'static-page',
+        path: '/list/profile',
+        name: 'profile',
         icon: 'smile',
         component: './List/modules/ProfileList',
       },

@@ -12,3 +12,11 @@ export const requestData = async (method= 'GET', url: string, params: any ) => {
     ...q,
   })
 }
+
+// 请求init.yaml文件
+export const requestInitYaml = (q?: any) => {
+  return request('/etc/keentune/conf/init.yaml', {
+    skipErrorHandler: true,
+    params: { q: Math.random() * (1000 + 1) },
+  })
+}

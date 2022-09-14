@@ -11,7 +11,7 @@ const url = 'http://121.43.179.166:8082' // 'http://39.102.55.119:8082',
 export default {
   dev: {
     '/var': {
-      target:  'https://anolis-service-daily.oss-cn-zhangjiakou.aliyuncs.com', // url,
+      target:  url,
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
@@ -26,7 +26,7 @@ export default {
       pathRewrite: { '^': '' },
     },
     '/etc': {
-      target: url,
+      target: url, // 'https://anolis-service-daily.oss-cn-zhangjiakou.aliyuncs.com', // 
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },

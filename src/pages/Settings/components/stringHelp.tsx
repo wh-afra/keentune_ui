@@ -43,11 +43,11 @@ const rowItem = (data: any, name: string) => {
     }
     if (type === 'Target') {
       const { domain, knobs } = item
-      return {id: ip, ip, type, color: '#fe6f69', desc: domain?.length ? `- ${domain.join()}`: '', knobs: knobs?.length ? knobs[0]: '' }
+      return {id: ip+type, ip, type, color: '#fe6f69', desc: domain?.map((item: any)=> `- ${item}`) || domain, knobs: knobs?.length ? knobs[0]: '' }
     }
     if (type === 'Bench') {
       const { destination, benchmark } = item
-      return {id: ip + type, ip, type, color: '#ffc14b', desc: destination ? `- DEST: ${destination}`: '', destination, benchmark}
+      return {id: ip+type, ip, type, color: '#ffc14b', desc: destination ? `- DEST: ${destination}`: '', destination: `${destination}Target`, benchmark }
     }
     return {id: ip, ip, type, color: '#11606b'}
   })
@@ -59,7 +59,7 @@ const rowItem = (data: any, name: string) => {
  * @return Array 
  */
  export const groupByIp = (data: any) => {
-  // 分组
+  // 分组: 根据ip分组
   let groupData: any = {}
   data.forEach((item: any) => {
     const { ip } = item
@@ -69,17 +69,18 @@ const rowItem = (data: any, name: string) => {
         groupData[ip] = [item]
       }
   });
-  // 添加默认的keentuned
+  // 添加默认keentuned
   const keentunedServe = { id: "localhost", ip: "localhost", type: 'Localhost', color: '#11606b' }
   if (groupData['localhost']) {
     groupData['localhost'].push(keentunedServe)
   } else {
     groupData['localhost'] = keentunedServe
   }
+  const groupNumber = Object.keys(groupData).length
 
   // 原子团之间间距
   const offsetX = 100
-  const offsetY= 50
+  const offsetY= 40
   // 原子团初始组的坐标
   const initialX = 100
   const initialY = 50
@@ -101,7 +102,7 @@ const rowItem = (data: any, name: string) => {
     coordinate = coordinate.concat( atomicGroups(rowList, center) )
   })
   // console.log('coordinate:', coordinate)
-  return coordinate;
+  return { groupData: coordinate, groupNumber };
 }
 
 /**

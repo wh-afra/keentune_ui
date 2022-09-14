@@ -62,14 +62,25 @@ export default forwardRef((props: any, ref: any) => {
     form
       .validateFields()
       .then(async (values) => {
-        const q = `keentune sensitize train --data ${values.data}  --job ${values.name}  --trials ${values.trial}  --config \"algorithm=${values.algorithm}\"`;
-        const res = await requestData('POST', '/cmd', { cmd: q });
-        if (res.suc) {
-          // 重置状态 && 跳转页面
-          initialStatus();
-          props.callback();
-        } else {
-          handleRes(res, '请求错误');
+        // step1. write
+        const result = await requestData('POST', '/write', {
+          name: 'keentuned.conf', 
+          info: `[brain]\nSENSITIZE_ALGORITHM = ${values.algorithm}`
+        });
+
+        if (result.suc) {
+          // step2. cmd
+          const q = `keentune sensitize train --data ${values.data}  --job ${values.name}  --trials ${values.trial}`;
+          const res = await requestData('POST', '/cmd', { cmd: q });
+          if (res.suc) {
+            handleRes(res, title);
+            // 重置状态 && 跳转页面
+            initialStatus();
+            props.callback();
+          } else {
+            handleRes(res, '请求错误');
+          }
+
         }
         setLoading(false);
       })

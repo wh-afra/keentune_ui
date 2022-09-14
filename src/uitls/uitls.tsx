@@ -237,5 +237,18 @@ export const saveToFile = (data: string, name: string) => {
 
   // 移除a标签
   document.body.removeChild(a);
-
 }
+
+
+export const waitTime = (time: number = 100) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, time);
+  });
+};
+
+// async function getFakeCaptcha(req: Request, res: Response) {
+//   await waitTime(2000);
+//   return res.json('captcha-xxx');
+// }

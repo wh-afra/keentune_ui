@@ -7,8 +7,8 @@ import { ExampleInfo } from '@/components/public/ExampleInfo';
 import CodeEditer from '@/components/public/CodeEditer';
 import { ReactComponent as CheckIcon } from '@/assets/svg/Check.svg'
 import { ReactComponent as RemakeIcon } from '@/assets/svg/Remake.svg'
-import { requestData } from '@/services';
-import { handleRes } from '@/uitls/uitls';
+import { requestData, requestInitYaml } from '@/services';
+import { handleRes, waitTime } from '@/uitls/uitls';
 import yaml from 'js-yaml';
 import TopoChart from './components/TopoChart';
 import { dealWith, resetData, groupByIp } from './components/stringHelp';
@@ -35,11 +35,12 @@ export default (props: any): React.ReactNode => {
   const [showBenchExample, setShowBenchExample] = useState<any>(false); // 展示示例
   const [showTargetExample, setShowTargetExample] = useState<any>(false); // 展示示例
   // TopoChart
-  const [topoChartData, setTopoChartData] = useState<any>([]);
-  const [topoChartLinks, setTopoChartLinks] = useState<any>([]);
+  const [topoChartData, setTopoChartData] = useState<any>({ data: [], links: [], group: 0, errMessage: '' });
+  // yaml
+  const [yamlData, setYamlData] = useState<any>('');
 
   useEffect(()=>{
-    requestInitYaml()
+    requestYaml()
   }, [])
 
   const fn = (key: string)=> {
@@ -92,25 +93,27 @@ export default (props: any): React.ReactNode => {
   };
 
   // 请求init.yaml文件
-  const requestInitYaml = async (q?: any) => {
+  const requestYaml = async (q?: any) => {
     try {
-      const content = await request('/var/keentune/conf/init.yaml', { // /etc/keentune/conf/init.yaml
-        skipErrorHandler: true,
-        params: { q: Math.random() * (1000 + 1) },
-      });
+      const content: any = await requestInitYaml();
+      setYamlData(content)
       // yaml文件 -> json
       let result = yaml.load(content);
       const data = dealWith(result)
+      // console.log('data:', data)
+
       // 加类型颜色、格式化文案; 分组、加坐标.
       const dataSet = resetData(data)
-      const groupData = groupByIp(dataSet)
+      const { groupData, groupNumber } = groupByIp(dataSet)
+      // console.log('groupData:', groupData, groupNumber)
 
-      // 数据
-      const dataSource = groupData.map((item: any)=> (
-        {
+      // case1.数据
+      const dataSource = groupData.map((item: any)=> {
+        let q: any = {
           name: item.id,
-          x: item.x,
-          y: item.y,
+          // x: item.x,
+          // y: item.y,
+          // symbolSize: 50,
           itemStyle: { 
             color: item.color, //圆圈的填充色
           },
@@ -148,8 +151,16 @@ export default (props: any): React.ReactNode => {
             }
           },
         }
-      ))
-      // 生成连线规则关系
+        // 根据分组个数大于1个组时，才可以使用每点坐标
+        if (groupNumber >= 2) {
+          q.x = item.x
+          q.y = item.y
+        } else {
+          q.symbolSize = 40
+        }
+        return q
+      })
+      // case2.生成连线规则关系
       const bench = groupData.filter(({type}: any)=> ['Bench', 'Target'].includes(type)).map((item: any)=> (
         {
           source: item.type === 'Target'? 'localhost': item.id,
@@ -168,29 +179,35 @@ export default (props: any): React.ReactNode => {
           }
         }
       ))
-      setTopoChartData(dataSource)
-      setTopoChartLinks(bench)
-      // console.log('dataSet:', dataSet)
-   
+
+      setTopoChartData({ dataSource, links: bench, groupNumber, errMessage: '' })
     } catch (err) {
       console.log('err')
     }
   };
+
   // 请求生成keentuned.conf文件
   const getFormData = () => {
     setLoading(true);
     form.validateFields().then(async (values: any) => {
       const { brain, benchGroup, targetGroup } = values || {};
       const info = brain + '\n' + benchGroup + '\n' + targetGroup
+      // 生成keentuned.conf
       const res = await requestData('POST', '/write', {name: 'keentuned.conf', info });
-      // console.log('res:', res)
       if (res.suc) {
-        // 重置状态
-        handleRes(res, '配置成功');
-        // 请求 init.yaml
-        requestInitYaml()
+        // 等待200毫秒
+        await waitTime(200);
+        // 生成init.yaml
+        const initRes = await requestData('POST', '/cmd', {cmd: `keentune init`});
+        if (initRes.suc) {
+          // 请求 init.yaml
+          requestYaml()
+        } else {
+          handleRes(initRes, '生成init.yaml失败');
+        }
       } else {
         handleRes(res, '配置错误');
+        setTopoChartData({ data: [], links: [], group: 0, errMessage: res.msg });
       }
       setLoading(false);
     }).catch((err) => {
@@ -248,10 +265,7 @@ export default (props: any): React.ReactNode => {
                       name="brain"
                       rules={[
                         { required: true, message: formatMessage({id: 'please.enter'}) },
-                        { validator: (_: any, value: any)=> {
-                            validFunction(_, value)
-                          } 
-                        },
+                        { validator: (_: any, value: any)=> validFunction(_, value) },
                       ]}
                     >
                       <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear />
@@ -273,10 +287,7 @@ export default (props: any): React.ReactNode => {
                       name="benchGroup"
                       rules={[
                         { required: true, message: formatMessage({id: 'please.enter'}) },
-                        { validator: (_: any, value: any)=> {
-                            validFunction(_, value)
-                          } 
-                        },
+                        { validator: (_: any, value: any)=> validFunction(_, value) },
                       ]}
                     >
                       <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear />
@@ -298,10 +309,7 @@ export default (props: any): React.ReactNode => {
                       name="targetGroup"
                       rules={[
                         { required: true, message: formatMessage({id: 'please.enter'}) }, 
-                        { validator: (_: any, value: any)=> {
-                            validFunction(_, value)
-                          } 
-                        },
+                        { validator: (_: any, value: any)=>  validFunction(_, value) },
                       ]}
                       className={styles.last_form_Item}
                     >
@@ -315,7 +323,9 @@ export default (props: any): React.ReactNode => {
             {/** 中间 */}
             <Col span={2} className={styles.center_layout}>
               <div>
-                <CheckIcon onClick={handleOk} />
+                <Spin spinning={loading}>
+                  <CheckIcon onClick={handleOk} />
+                </Spin>
               </div>
               <div style={{marginBottom:'-35px'}}>
                 <Tooltip placement="bottom" title={ formatMessage({ id: 'remake', defaultMessage: 'Remake' }) }>
@@ -328,11 +338,11 @@ export default (props: any): React.ReactNode => {
             <Col span={12}>
               <p className={styles.title}><FormattedMessage id="env.topology"/></p>
               <PageContainer style={{ padding:'30px', width: '100%', height: 'calc(100% - 76.2px)' }}>
-                <ExampleInfo onlyShow height={352}>
-                    <TopoChart title="Optimizing Topology" data={topoChartData} links={topoChartLinks} />
+                <ExampleInfo onlyShow height={302}>
+                    <TopoChart title="Optimizing Topology" data={topoChartData} />
                 </ExampleInfo>
-                <ExampleInfo onlyShow height={180} style={{ marginTop: '20px',padding:0}}>
-                  <CodeEditer code={''} lineNumbers height={180} theme={'eclipse'} />
+                <ExampleInfo onlyShow height={230} style={{ marginTop: '20px',padding:0}}>
+                  <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} />
                 </ExampleInfo>
               </PageContainer>
             </Col>

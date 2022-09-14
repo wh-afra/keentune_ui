@@ -5,6 +5,7 @@ import { Modal, message, Button, Space, Spin, Input, Table, Radio } from 'antd'
 import { ExclamationCircleOutlined } from '@ant-design/icons'
 import { debounce, handleRes } from '@/uitls/uitls'
 import { getRequestData } from '../service'
+import { requestData } from '@/services/index';
 import styles from './index.less'
 
 /**
@@ -30,7 +31,7 @@ export default forwardRef((props: any, ref: any) => {
   const getTableData = async () => {
     setLoading(true);
       try {
-        const res = await getRequestData({ cmd: "keentune config target" })
+        const res = await requestData('post', '/read', { type: 'target-group' });
         if (res.suc) {
           // ...提取group
           const tempData = res?.msg?.match(/\[target-group-.*?\]/gi) || []

@@ -1,7 +1,8 @@
 import list_2 from '@/assets/list_2.png';
 import list_3 from '@/assets/list_3.png';
-import list_4 from '@/assets/list_4.jpg';
+import list_4 from '@/assets/list_4.png';
 import { useState, useEffect } from 'react';
+import { requestInitYaml } from '@/services';
 import { FormattedMessage, useIntl, history, request } from 'umi';
 import styles from './index.less';
 
@@ -15,12 +16,8 @@ export default () => {
   // 初始化请求数据
   const requestAllData = async (q?: any) => {
     try {
-      const strData = await request('/etc/keentune/conf/init.yaml', {
-        skipErrorHandler: true,
-        params: { q: Math.random() * (1000 + 1) },
-      });
-      console.log('strData:', strData)
-       
+      const strData: any = await requestInitYaml()
+      // console.log('strData:', strData)
       if (strData) { setHasSet(true) }
     } catch (err) {
       setHasSet(false)
@@ -71,7 +68,7 @@ export default () => {
         {hasSet ? (
           <>
             <Template
-              route="/list/tuning-task"
+              route="/list/profile"
               logo={list_4}
               title="一键式专家调优"
               text="积累多种场景下业务全栈调优的专家知识，根据业务类型对系统进行一键式优化"
