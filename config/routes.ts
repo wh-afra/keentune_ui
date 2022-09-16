@@ -4,7 +4,7 @@
     name: 'home',
     layout: false,
     hideInMenu: true,
-    component: './Home',
+    component: './home',
   },
   {
     path: '/list',

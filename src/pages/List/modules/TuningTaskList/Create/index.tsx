@@ -180,6 +180,14 @@ export default forwardRef((props: any, ref: any) => {
     return Promise.resolve();
   };
 
+  // 请输入正整数
+  const validatorNumber = (_: any, value: any) => {
+    if (value || value == 0) {
+      return /(^[1-9]\d*$)/.test(value) ? Promise.resolve(): Promise.reject(new Error('只能输入正整数'))
+    }
+    return Promise.resolve();
+  };
+
   // 校验文本域内容格式
   // const validFunction = (_: any, value: any) => {
   //   if (!value) {
@@ -317,10 +325,8 @@ export default forwardRef((props: any, ref: any) => {
                 label="Iteration"
                 name="iteration"
                 rules={[
-                  {
-                    required: true,
-                    message: '请输入Iteration',
-                  },
+                  { required: true, message: '请输入Iteration'}, 
+                  { validator: validatorNumber },
                 ]}
               >
                 <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />

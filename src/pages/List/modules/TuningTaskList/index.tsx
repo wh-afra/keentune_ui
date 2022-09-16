@@ -162,7 +162,7 @@ export default () => {
         cmdOperation({ cmd: `keentune param rollback` }, key);
         break;
       case 'dump':
-        cmdOperation({ cmd: `keentune param dump --force --job ${row.name}` }, key);
+        cmdOperation({ cmd: `keentune param dump --job ${row.name}` }, key);
         break;
       default:
         null;

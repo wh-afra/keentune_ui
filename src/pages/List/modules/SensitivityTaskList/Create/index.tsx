@@ -110,6 +110,15 @@ export default forwardRef((props: any, ref: any) => {
     return Promise.resolve();
   };
 
+
+  // 请输入正整数
+  const validatorNumber = (_: any, value: any) => {
+    if (value || value == 0) {
+      return /(^[1-9]\d*$)/.test(value) ? Promise.resolve(): Promise.reject(new Error('只能输入正整数'))
+    }
+    return Promise.resolve();
+  };
+
   // Select组件：添加输入功能
   const handleSearchData = (event: any) => {
     const newValue = event.target.value
@@ -220,13 +229,11 @@ export default forwardRef((props: any, ref: any) => {
                 className={styles.last_form_Item}
                 name="trial"
                 rules={[
-                  {
-                    required: true,
-                    message: '请输入Trial',
-                  },
+                  { required: true, message: '请输入Trial' },
+                  { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={1} max={10} placeholder="数值" style={{ width: '100%' }} />
               </Form.Item>
 
            {/* <Row gutter={16}>
