@@ -329,7 +329,7 @@ export default forwardRef((props: any, ref: any) => {
                   { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={10} placeholder="数值" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -339,11 +339,12 @@ export default forwardRef((props: any, ref: any) => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入baseline_bench_round',
+                    message: '请输入',
                   },
+                  { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={1} placeholder="数值" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -353,11 +354,12 @@ export default forwardRef((props: any, ref: any) => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入tuning_bench_round',
+                    message: '请输入',
                   },
+                  { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={1} placeholder="数值" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
             <Col span={6}>
@@ -367,11 +369,12 @@ export default forwardRef((props: any, ref: any) => {
                 rules={[
                   {
                     required: true,
-                    message: '请输入recheck_bench_round',
+                    message: '请输入',
                   },
+                  { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={0} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={1} placeholder="数值" style={{ width: '100%' }} />
               </Form.Item>
             </Col>
           </Row>
