@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useLayoutEffect, useCallback } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import { notification, message } from 'antd';
 import { request } from 'umi';
 
@@ -160,9 +160,9 @@ export const statusEnum = {
 }
 
 // 智能调优功能的算法
-export const tuningAlgorithm = ['TPE', 'HORD', 'Random'] // 'Bayesian Optimize'
+// export const tuningAlgorithm = ['TPE', 'HORD', 'Random']
 // 敏感参数功能算法
-export const sensitivityAlgorithm = ['lasso', 'univariate', 'shap']
+// export const sensitivityAlgorithm = ['lasso', 'univariate', 'shap']
 
 /**
  * @function http响应报错处理，报错弹框提示！

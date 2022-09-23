@@ -1,10 +1,12 @@
 import { ExampleInfo } from '@/components/public/ExampleInfo';
 import { requestData } from '@/services';
-import { handleRes, tuningAlgorithm } from '@/uitls/uitls';
+import { handleRes } from '@/uitls/uitls';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Spin } from 'antd';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { FormattedMessage, useIntl } from 'umi';
+import { requestInitYaml } from '@/services';
+import yaml from 'js-yaml';
 import styles from './index.less';
 
 const defaultBench = `[bench-group-1]
@@ -28,41 +30,12 @@ export default forwardRef((props: any, ref: any) => {
   // const [data, setData] = useState<any>('');
   const [title, setTitle] = useState('create');
   const [form] = Form.useForm();
-  // Select
-  const [fetching, setFetching] = useState(false);
-  const [productPagination, setProductPagination] = useState({
-    data: [{ id: 'tpe', name: 'tpe' }],
-    total: 0,
-    page_num: 1,
-    page_size: 20,
-  });
-  //
-  const [showExample, setShowExample] = useState<any>(false); // 展示示例
-  const [showTargetExample, setShowTargetExample] = useState<any>(false); // 展示示例
+  const [algorithmList, setAlgorithmList] = useState<any>([]);
 
   const initialStatus = () => {
     form.resetFields();
     setVisible(false);
   };
-
-  // 1.请求数据
-  // const getRequestData = async (url: string) => {
-  //   setLoading(true);
-  //     try {
-  //       const data = await request(url, { skipErrorHandler: true, })
-  //       if (typeof data === 'string') {
-  //         setData(data)
-  //       } else if (data instanceof Object) {
-  //         // json对象 转 格式化字符串。
-  //         const res = JSON.stringify(data, null, 4)
-  //         setData(res)
-  //       }
-  //       setLoading(false);
-  //     } catch (err: any) {
-  //       // message.error('查询数据失败！');
-  //       setLoading(false);
-  //     }
-  // }
 
   useImperativeHandle(ref, () => ({
     show: ({ title = '', details = {} }: any) => {
@@ -77,32 +50,24 @@ export default forwardRef((props: any, ref: any) => {
     },
   }));
 
-  // 1.请求数据
-  const fetchSelectOption = async (query: any, option: string) => {
-    const tempValue = { ...query };
-    try {
-      // const res = await queryProjectList(tempValue);
-      // if (res.code === 200) {
-      //   setProjectList(res.data || []);
-      // } else {
-      //   message.error(res.msg || '请求数据失败');
-      // }
-    } catch (e) {
-      console.log(e);
-    }
-  };
+  useEffect(()=> {
+    getYamlData()
+  }, [])
 
-  const handlePopupScroll = ({ target }: any) => {
-    const { page_num, page_size, total } = productPagination;
-    const { clientHeight, scrollHeight, scrollTop } = target;
-    if (
-      clientHeight + scrollTop + 1 >= scrollHeight &&
-      !isNaN(page_num) &&
-      Math.ceil(total / page_size) > page_num
-    ) {
-      fetchSelectOption({ page_num: page_num + 1, page_size }, 'concat');
+  // 1.请求yaml
+  const getYamlData = async (q?: any) => {
+    try {
+      const content: any = await requestInitYaml()
+      // yaml文件 -> json
+      let result = yaml.load(content);
+      const { brain }: any = result || {}
+      const { algo_sensi = [], algo_tuning = [] }: any = brain || {}
+      setAlgorithmList(algo_tuning)
+    } catch (err) {
+       console.log(err)
     }
   };
+ 
   const handleClear = () => {
     form.setFieldsValue({ algorithm: undefined });
   };
@@ -172,6 +137,8 @@ export default forwardRef((props: any, ref: any) => {
     if (value) {
       if (value.toLowerCase() === 'name') {
         return Promise.reject(new Error(`不能以${value}命名!`));
+      } else if (!/^[A-Za-z0-9\_]*$/g.test(value)) {
+        return Promise.reject( new Error(`仅允许包含字母、数字、下划线!`) );
       }
       return dataSource?.filter((item: any) => item.name === value).length
         ? Promise.reject(new Error('Name名字重复!'))
@@ -188,68 +155,13 @@ export default forwardRef((props: any, ref: any) => {
     return Promise.resolve();
   };
 
-  // 校验文本域内容格式
-  // const validFunction = (_: any, value: any) => {
-  //   if (!value) {
-  //     return Promise.resolve();
-  //   }
-  //   const list = value.split('\n');
-
-  //   // 校验每一行的格式
-  //   let validate = true;
-  //   let row = 0;
-  //   for (let item of list) {
-  //     ++row;
-  //     if (item.trim() === '') {
-  //       validate = true;
-  //     } else if (item.match(/^\[.*?\]$/g)) {
-  //       validate = true;
-  //     } else if (
-  //       item.trim().split('=')?.length === 2 &&
-  //       item.trim().split('=')[0] &&
-  //       item.trim().split('=')[1]
-  //     ) {
-  //       validate = true;
-  //     } else {
-  //       validate = false;
-  //       break;
-  //     }
-  //   }
-  //   return validate
-  //     ? Promise.resolve()
-  //     : Promise.reject(
-  //         new Error(
-  //           `${formatMessage({ id: 'ProfileList.validateInfo1' })} ${row} ${formatMessage({
-  //             id: 'ProfileList.validateInfo2',
-  //           })}`,
-  //         ),
-  //       );
-  // };
-
-  // const label_Benchmark = (
-  //   <div className={styles.variableLabel}>
-  //     <span>Benchmark group 配置</span>
-  //     <span className={styles.Bulk_btn} onClick={() => setShowExample(!showExample)}>
-  //       {showExample ? '填写' : '示例'}
-  //     </span>
-  //   </div>
-  // );
-  // const label_Target = (
-  //   <div className={styles.variableLabel}>
-  //     <span>Target group 配置</span>
-  //     <span className={styles.Bulk_btn} onClick={() => setShowTargetExample(!showTargetExample)}>
-  //       {showTargetExample ? '填写' : '示例'}
-  //     </span>
-  //   </div>
-  // );
   return (
     <Modal
       title={
         <Space>
-          <ExclamationCircleOutlined style={{ fontSize: 20, color: '#008dff' }} />
           <FormattedMessage id={title} />
         </Space>
-      }
+      } // <ExclamationCircleOutlined style={{ fontSize: 20, color: '#008dff' }} />
       visible={visible}
       maskClosable={true}
       width={800}
@@ -283,7 +195,10 @@ export default forwardRef((props: any, ref: any) => {
               <Form.Item
                 label="Name"
                 name="name"
-                rules={[{ required: true, message: '请输入Name' }, { validator: validatorName }]}
+                rules={[
+                  { required: true, max: 200, message: '请输入Name' }, 
+                  { validator: validatorName }
+                ]}
               >
                 <Input placeholder="请输入" autoComplete="off" />
               </Form.Item>
@@ -298,7 +213,7 @@ export default forwardRef((props: any, ref: any) => {
                   allowClear
                   style={{ width: '100%' }}
                   placeholder="请选择"
-                  notFoundContent={fetching ? <Spin size="small" /> : null}
+                  // notFoundContent={fetching ? <Spin size="small" /> : null}
                   getPopupContainer={(node) => node.parentNode}
                   // onChange={productOnChange}
                   // onPopupScroll={handlePopupScroll}
@@ -309,7 +224,7 @@ export default forwardRef((props: any, ref: any) => {
                     return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
                   }}
                 >
-                  {tuningAlgorithm.map((item: any) => (
+                  {algorithmList.map((item: any) => (
                     <Select.Option key={item} value={item}>
                       {item}
                     </Select.Option>

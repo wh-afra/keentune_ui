@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography } from 'antd';
+import { Card, Alert, Typography, Popover } from 'antd';
 import { useIntl, FormattedMessage, history } from 'umi';
 import background_logo from '@/assets/logo_background.jpg';
 import KeenTune_logo from '@/assets/KeenTune-logo.png';
@@ -13,6 +13,16 @@ import styles from './index.less';
 
 export default (): React.ReactNode => {
   const intl = useIntl();
+
+  // 倒计时3秒，隐藏提示
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCount(3);
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
+
   const { height } = useClientSize()
   const style = { background: `url(${background_logo}) no-repeat`, backgroundSize: '100% auto', minHeight: height }
 
@@ -36,7 +46,11 @@ export default (): React.ReactNode => {
 
       <div className={styles.position_img}>
         <SelectLang className={styles.action} />
-        <SettingOutlined className={styles.setting} onClick={()=> { history.push('/settings') }}/>
+
+        <Popover content={<span>点击此处可以重新设置</span>} placement="bottom">
+          <SettingOutlined className={styles.setting} onClick={()=> { history.push('/settings') }}/>
+        </Popover>
+        
       </div>
     </div>
   );

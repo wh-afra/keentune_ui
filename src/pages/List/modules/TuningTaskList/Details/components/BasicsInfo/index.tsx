@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Tooltip, message, Row, Col, Tag } from 'antd';
+import { Button, Tooltip, message, Row, Col, Tag, Popover } from 'antd';
 import { request, history } from 'umi';
 import { RightOutlined, DownOutlined, InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 //
@@ -40,7 +40,12 @@ export default ({ data = {}, algorithmRunTime }: any) => {
         <div className={styles.tag_value}>
           <PopoverEllipsis title={value} width={valueWidth} linkTo={linkTo} onClick={onClick}/>
         </div>
-        {onCopy? <span onClick={onCopy} id="copy_link"><CopyOutlined style={{color:'#1890ff',cursor:'pointer'}}/></span>: null}
+        {onCopy?
+          <Popover content={<span>Copy</span>} placement="top">
+            <span onClick={onCopy} id="copy_link"><CopyOutlined style={{color:'#1890ff',cursor:'pointer'}}/></span>
+          </Popover>
+          : 
+          null}
       </div>
     </Col>
   }
@@ -63,10 +68,10 @@ export default ({ data = {}, algorithmRunTime }: any) => {
   const cmdStr = data.cmd?.replaceAll('\\n', '\\')
 
   return (
-    <div className={styles.basicInfo_root} onClick={()=> /* setExpanded(!expanded) */ {} }>
+    <div className={styles.basicInfo_root}>
       <PageContainer title="基本信息" style={{ marginTop:20,padding:'30px 42px',position:'relative'}}>
         <div className={styles.expanded_icon}>
-        {expanded? <DownOutlined />: <RightOutlined /> }
+        {expanded? <DownOutlined onClick={()=> setExpanded(false) } />: <RightOutlined onClick={()=> setExpanded(true) }/> }
         </div>
         {expanded?
           <>
@@ -81,7 +86,7 @@ export default ({ data = {}, algorithmRunTime }: any) => {
               <RowItem label="StartTime"  value={data.start_time} />
               <RowItem label="EndTime"  value={data.end_time} />
               <RowItem label="Algorithm Running Time"  value={algorithmRunTime} />
-              <RowItem label="命令行"  value={cmdStr} valueWidth={450} onCopy={()=> copyText(cmdStr)}/>
+              <RowItem label="命令行"  value={cmdStr} valueWidth={350} onCopy={()=> copyText(cmdStr)}/>
               <RowItem label="任务日志"  value={data.log} linkTo={data.log} /*onClick={()=> viewDetails(data.log, data.log)}*/ />
             {/* </Row>
             <div className={styles.divider_line}></div>

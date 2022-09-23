@@ -86,7 +86,7 @@ export default forwardRef((props: any, ref: any) => {
 
 	return (
       <Modal
-        title={<Space><ExclamationCircleOutlined style={{ fontSize:14,color:'#008dff'}}/>{title}</Space>}
+        title={<Space>{title}</Space>} // <ExclamationCircleOutlined style={{ fontSize:14,color:'#008dff'}}/>
         visible={visible}
         maskClosable={true}
         width={960}

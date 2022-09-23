@@ -1,9 +1,11 @@
+import React from 'react';
 import type { Settings as LayoutSettings } from '@ant-design/pro-layout';
 import { SettingDrawer } from '@ant-design/pro-layout';
 import { PageLoading } from '@ant-design/pro-layout';
 import type { RunTimeLayoutConfig } from 'umi';
 import { history, Link, RequestConfig } from 'umi';
 import RightContent from '@/components/RightContent';
+import SelfLogo from '@/components/SelfLogo';
 import Footer from '@/components/Footer';
 import KeenTune_logo from '@/assets/KeenTune-logo.png';
 import { currentUser as queryCurrentUser } from './services/ant-design-pro/api';
@@ -86,7 +88,9 @@ export const layout: RunTimeLayoutConfig = ({ initialState, setInitialState }) =
       //   history.push(loginPath);
       // }
     },
-    menuHeaderRender: undefined,
+    menuHeaderRender: (logo, title)=> {
+      return <SelfLogo logo={logo} />
+    },
     // 自定义 403 页面
     // unAccessible: <div>unAccessible</div>,
     ...initialState?.settings,

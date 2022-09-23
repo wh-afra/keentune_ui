@@ -22,12 +22,8 @@ export default () => {
   const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<any>([]);
-  const [listPage, setListPage] = useState({
-    pageNum: 1,
-    pageSize: 20,
-    rows: [],
-    total: 0,
-  });
+  const [listPage, setListPage] = useState<any>({ current: 1, pageSize: 20 })
+
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const logModalRef: any = useRef(null);
   const createModalRef: any = useRef(null);
@@ -35,15 +31,18 @@ export default () => {
   // 初始化状态
   const initialStatus = () => {
     setListPage({
-      pageNum: 1,
-      pageSize: 20,
-      rows: [],
-      total: 0,
+     current: 1, 
+     pageSize: 20
     });
   };
 
+
   // 初始化请求数据
   const requestAllData = async (q?: any) => {
+    // case1.清空选中项
+    setSelectedRowKeys([]);
+    
+    // case2.数据
     setLoading(true);
     try {
       const data = await request('/var/keentune/tuning_jobs.csv', {
@@ -53,13 +52,6 @@ export default () => {
       const resetData = dataDealWith(data);
       if (resetData && resetData.length) {
         setDataSource(resetData);
-        // 前端分页
-        setListPage({
-          pageNum: 1,
-          pageSize: listPage.pageSize,
-          rows: resetData?.slice(0, listPage.pageSize),
-          total: resetData.length,
-        });
       }
       setLoading(false);
     } catch (err) {
@@ -71,23 +63,6 @@ export default () => {
     requestAllData();
   }, []);
 
-  // 前端分页
-  const getTableData = (q: any) => {
-    const { total } = listPage;
-    const { pageNum, pageSize } = q;
-    if (dataSource && dataSource.length) {
-      const start = (pageNum - 1) * pageSize;
-      setListPage({
-        pageNum,
-        pageSize,
-        rows: dataSource.slice(start, start + pageSize),
-        total,
-      });
-    } else {
-      initialStatus();
-    }
-  };
-
   // 删除弹框
   const showDeleteConfirm = (row: any, key: string) => {
     Modal.confirm({
@@ -95,7 +70,6 @@ export default () => {
       icon: <ExclamationCircleOutlined />,
       content: '',
       okText: 'Yes',
-      // okType: 'danger',
       cancelText: 'No',
       onOk() {
         cmdOperation({ cmd: `keentune param delete --job ${row.name}` }, key);
@@ -339,7 +313,7 @@ export default () => {
           }}
           size="small"
           columns={columns}
-          dataSource={listPage.rows}
+          dataSource={dataSource}
           rowSelection={{
             hideSelectAll: true,
             columnWidth: 47,
@@ -356,22 +330,19 @@ export default () => {
           tableAlertOptionRender={() => false}
           rowKey="name"
           pagination={{
-            current: listPage.pageNum,
+            current: listPage.current,
             pageSize: listPage.pageSize,
-            total: listPage.total,
+            total: dataSource.length,
             size: 'default',
             showSizeChanger: true,
             showTotal: (total, range) => {
               return `${formatMessage({ id: 'total' })} ${total} ${formatMessage({
                 id: 'records',
-              })} ${listPage.pageNum} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
+              })} ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
                 id: 'page',
               })}`;
             },
-            onChange: (page, pageSize) => {
-              const tempPage = pageSize !== listPage.pageSize ? 1 : page;
-              getTableData({ pageNum: tempPage, pageSize });
-            },
+            onChange: (page, pageSize) => { setListPage({ current: page, pageSize }) },
           }}
           search={false}
           dateFormatter="string"

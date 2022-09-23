@@ -1,35 +1,33 @@
-import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
-import { Button, Modal } from 'antd';
+import { Button, Popover, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { history, request, useIntl } from 'umi';
 import moment from 'moment';
 //
 import PageContainer from '@/components/public/PageContainer';
+import PopoverEllipsis from '@/components/public/PopoverEllipsis';
 import LogModal from '@/pages/List/LogModal';
 import { requestData } from '@/services/index';
 import { dataDealWith, handleRes, statusEnum } from '@/uitls/uitls';
 import CreateModal from './Create';
 import styles from './index.less';
+import Promotion from './Promotion';
+import ValPromotion from './ValPromotion';
 
-export type TableListItem = {
-  key: number;
-  name: string;
-  containers: number;
-  status: string;
-  createdAt: number;
-  memo: string;
-};
 /**
- * 敏感参数识别列表
+ * 智能参数调优任务页面
  */
 export default () => {
   const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false);
-  const [dataSource, setDataSource] = useState<any[]>([]);
-  const [listPage, setListPage] = useState<any>({ current: 1, pageSize: 20 })
-
+  const [dataSource, setDataSource] = useState<any>([]);
+  const [listPage, setListPage] = useState({
+    pageNum: 1,
+    pageSize: 20,
+    rows: [],
+    total: 0,
+  });
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const logModalRef: any = useRef(null);
   const createModalRef: any = useRef(null);
@@ -37,26 +35,34 @@ export default () => {
   // 初始化状态
   const initialStatus = () => {
     setListPage({
-      current: 1, 
+      pageNum: 1,
       pageSize: 20,
+      rows: [],
+      total: 0,
     });
   };
 
+  // 条件过滤
+
+
   // 初始化请求数据
   const requestAllData = async (q?: any) => {
-    // case1.清空选中项
-    setSelectedRowKeys([]);
-    // case2.数据
     setLoading(true);
-
     try {
-      const strData = await request('/var/keentune/sensitize_jobs.csv', {
+      const data = await request('/var/keentune/tuning_jobs.csv', {
         skipErrorHandler: true,
         params: { q: Math.random() * (1000 + 1) },
       });
-      const data = dataDealWith(strData);
-      if (data && data.length) {
-        setDataSource(data);
+      const resetData = dataDealWith(data);
+      if (resetData && resetData.length) {
+        setDataSource(resetData);
+        // 前端分页
+        setListPage({
+          pageNum: 1,
+          pageSize: listPage.pageSize,
+          rows: resetData?.slice(0, listPage.pageSize),
+          total: resetData.length,
+        });
       }
       setLoading(false);
     } catch (err) {
@@ -68,6 +74,22 @@ export default () => {
     requestAllData();
   }, []);
 
+  // 前端分页
+  const getTableData = (q: any) => {
+    const { total } = listPage;
+    const { pageNum, pageSize } = q;
+    if (dataSource && dataSource.length) {
+      const start = (pageNum - 1) * pageSize;
+      setListPage({
+        pageNum,
+        pageSize,
+        rows: dataSource.slice(start, start + pageSize),
+        total,
+      });
+    } else {
+      initialStatus();
+    }
+  };
 
   // 删除弹框
   const showDeleteConfirm = (row: any, key: string) => {
@@ -76,18 +98,12 @@ export default () => {
       icon: <ExclamationCircleOutlined />,
       content: '',
       okText: 'Yes',
-      // okType: 'danger',
       cancelText: 'No',
       onOk() {
-        cmdOperation({ cmd: `keentune sensitize delete --job ${row.name}` }, key);
+        cmdOperation({ cmd: `keentune param delete --job ${row.name}` }, key);
       },
       onCancel() {},
     });
-  };
-
-
-  const linkTo = (row: any) => {
-    history.push({ pathname: '/list/sensitive-parameter/details', query: row });
   };
 
   // 操作功能
@@ -107,6 +123,7 @@ export default () => {
       setLoading(false);
     }
   };
+
   // rerun
   const rerunOperation = async (q: any) => {
     setLoading(true);
@@ -124,6 +141,7 @@ export default () => {
     }
   };
 
+  const linkTo = (row: any) => history.push({ pathname: '/list/tuning-task/details', query: row });
   const fn = (key: string, row: any) => {
     // console.log('row:', row)
     switch (key) {
@@ -134,20 +152,26 @@ export default () => {
         logModalRef.current?.show({ title: '日志信息', url: row.log });
         break;
       case 'delete':
-        showDeleteConfirm(row, key) 
+        showDeleteConfirm(row, key)
         break;
       case 'rerun':
-        rerunOperation({ name: row.name, type: 'training' });
+        rerunOperation({ name: row.name, type: 'tuning' });
         break;
       case 'stop':
-        cmdOperation({ cmd: `keentune sensitize stop` }, key);
+        cmdOperation({ cmd: `keentune param stop` }, key);
+        break;
+      case 'rollback':
+        cmdOperation({ cmd: `keentune param rollback` }, key);
+        break;
+      case 'dump':
+        cmdOperation({ cmd: `keentune param dump --job ${row.name}` }, key);
         break;
       default:
         null;
     }
   };
 
-  const columns: ProColumns<TableListItem>[] = [
+  const columns: any = [
     {
       title: <span>Name</span>,
       dataIndex: 'name',
@@ -161,17 +185,16 @@ export default () => {
       },
     },
     {
-      title: 'Data',
-      dataIndex: 'data_path',
-      ellipsis: true,
-    },
-    {
       title: 'Algorithm',
       dataIndex: 'algorithm',
       ellipsis: true,
+      render: (text: any, row: any) => {
+        return <span>{text}</span>;
+      },
     },
     {
       title: 'Status',
+      width: 80,
       dataIndex: 'status',
       valueEnum: statusEnum,
       render: (text: any, row: any) => {
@@ -179,15 +202,75 @@ export default () => {
       },
     },
     {
-      title: 'Trial',
-      dataIndex: 'trials',
+      title: 'Iteration',
+      dataIndex: 'iteration',
+      width: 80,
       ellipsis: true,
+      render: (text: any, row: any) => {
+        return <span>{text}</span>;
+      },
+    },
+    {
+      title: 'Configuration',
+      dataIndex: 'workspace',
+      width: 110,
+      render: (text: any, row: any) => {
+        const tempUrl = row.workspace + '/keentuned.conf';
+        return (
+          <PopoverEllipsis
+            title={tempUrl}
+            onClick={() =>
+              logModalRef.current?.show({ title: '【Target Group】文件', url: tempUrl })
+            }
+          />
+        );
+      },
+    },
+    // {
+    //   title: (
+    //     <Popover content={<span style={{}}>Benchmark Group</span>}>
+    //       <div className={styles['table-title-ellipsis']}>Benchmark Group</div>
+    //     </Popover>
+    //   ),
+    //   dataIndex: 'benchmark',
+    //   ellipsis: true,
+    //   render: (text: any, row: any) => {
+    //     return (
+    //       <PopoverEllipsis
+    //         title={row.benchmark}
+    //         onClick={() =>
+    //           logModalRef.current?.show({ title: '【Parameter】配置文件', url: row.benchmark })
+    //         }
+    //       />
+    //     );
+    //   },
+    // },
+    {
+      title: (
+        <Popover content={<span>intermediate promotion</span>}>
+          <div className={styles['table-title-ellipsis']}>int.promotion</div>
+        </Popover>
+      ),
+      dataIndex: 'promotion',
+      ellipsis: true,
+      render: (text: any, row: any) => {
+        return row.status === 'finish' ? <Promotion data={row} /> : '-';
+      },
+    },
+    {
+      title: <Popover content={<span>validated promotion</span>}><div>val.promotion</div></Popover>,
+      dataIndex: 'promotion',
+      ellipsis: true,
+      render: (text: any, row: any) => {
+        return row.status === 'finish' ? <ValPromotion data={row} /> : '-';
+      },
     },
     {
       title: 'Start Time',
       dataIndex: 'start_time',
       key: 'start_time',
       width: 166,
+      // valueType: 'date',
       sorter: (a: any, b: any) => moment(a.start_time).unix() - moment(b.start_time).unix(),
       render: (text: any, row: any) => {
         return <span>{text}</span>;
@@ -211,50 +294,46 @@ export default () => {
         return <span>{text}</span>;
       },
     },
-    // {
-    //   title: 'Algorithm Time',
-    //   dataIndex: 'algorithm',
-    //   ellipsis: true,
-    //   render: (text: any, row: any)=> <AlgorithmTime data={row} />
-    // },
     {
       title: 'Operations',
       key: 'option',
-      width: 100,
       valueType: 'option',
-      render: (text, record, _, action) => [
-        <TableDropdown
-          key="actionGroup"
-          onSelect={(key) => {
-            fn(key, record);
-          }}
-          menus={
-            record.status === 'running'
-              ? [
-                  { key: 'details', name: 'Details', className: 'menus_item_default' },
-                  { key: 'log', name: 'Log', className: 'menus_item_default' },
-                  { key: 'stop', name: 'Stop', className: 'menus_item_default' },
-                ]
-              : [
-                  { key: 'details', name: 'Details', className: 'menus_item_default' },
-                  { key: 'log', name: 'Log', className: 'menus_item_default' },
-                  { key: 'rerun', name: 'Rerun', className: `menus_item_default` },
-                  { key: 'delete', name: 'Delete', className: 'menus_item_danger' },
-                ]
-          }
-        />,
-      ],
+      render: (text: any, record: any) => {
+        const not_finish = record.status !== 'finish'
+        return ([
+          <TableDropdown
+            key="actionGroup"
+            onSelect={(key) => fn(key, record)}
+            menus={
+              record.status === 'running'
+                ? [
+                    { key: 'details', name: 'Details', className: 'menus_item_default' },
+                    { key: 'log', name: 'Log', className: 'menus_item_default' },
+                    { key: 'stop', name: 'Stop', className: 'menus_item_default' },
+                  ]
+                : [
+                    { key: 'details', name: 'Details', className: 'menus_item_default' },
+                    { key: 'log', name: 'Log', className: 'menus_item_default' },
+                    { key: 'rollback', name: 'Rollback', className: `menus_item_${not_finish? 'disable': 'default'}`, disabled: not_finish },
+                    { key: 'dump', name: 'Dump', className: `menus_item_${not_finish? 'disable': 'default'}`, disabled: not_finish },
+                    { key: 'rerun', name: 'Rerun', className: 'menus_item_default' },
+                    { key: 'delete', name: 'Delete', className: 'menus_item_danger' },
+                  ]
+            }
+          />,
+        ])
+      },
       className: 'table-operate-dropdown-style',
       align: 'center',
     },
   ];
 
   return (
-    <div className={styles.sensitive_parameter_page}>
+    <div className={styles.static_page}>
       <PageContainer style={{ marginTop: 24, padding: 0 }}>
-        <ProTable<TableListItem>
+        <ProTable
           loading={loading}
-          headerTitle="敏感参数识别任务记录"
+          headerTitle="智能参数调优任务记录"
           options={{
             reload: requestAllData,
             setting: true,
@@ -262,39 +341,38 @@ export default () => {
           }}
           size="small"
           columns={columns}
-          dataSource={dataSource}
+          dataSource={listPage.rows}
           rowSelection={{
             hideSelectAll: true,
             columnWidth: 47,
             selectedRowKeys: selectedRowKeys,
-            onChange: (selectedRowKeys: any, selectedRows: any) => {
+            onChange: (selectedRowKeys: any[], selectedRows: any) => {
               setSelectedRowKeys(selectedRowKeys);
             },
-            getCheckboxProps: (record) => {
-              return {
-                disabled: selectedRowKeys.length >= 3 && !selectedRowKeys.includes(record.name), // 已选择3个且name不包含在已选择中时，则不可选。
-                name: record.name,
-              };
-            },
+            getCheckboxProps: (record: any) => ({
+              disabled: selectedRowKeys.length >= 3 && !selectedRowKeys.includes(record.name),
+              name: record.name,
+            }),
           }}
           tableAlertRender={() => false} // 不显示提示框
           tableAlertOptionRender={() => false}
           rowKey="name"
           pagination={{
-            current: listPage.current,
+            current: listPage.pageNum,
             pageSize: listPage.pageSize,
-            total: dataSource.length,
+            total: listPage.total,
             size: 'default',
             showSizeChanger: true,
             showTotal: (total, range) => {
               return `${formatMessage({ id: 'total' })} ${total} ${formatMessage({
                 id: 'records',
-              })} ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
+              })} ${listPage.pageNum} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
                 id: 'page',
               })}`;
             },
-            onChange: (page, pageSize) => { 
-              setListPage({ current: page, pageSize });
+            onChange: (page, pageSize) => {
+              const tempPage = pageSize !== listPage.pageSize ? 1 : page;
+              getTableData({ pageNum: tempPage, pageSize });
             },
           }}
           search={false}
@@ -313,7 +391,7 @@ export default () => {
               type="primary"
               onClick={() =>
                 history.push({
-                  pathname: '/list/sensitivity/compare',
+                  pathname: '/list/tuning-task/compare',
                   query: { name: selectedRowKeys },
                 })
               }
@@ -324,7 +402,9 @@ export default () => {
           ]}
         />
 
+        {/* log */}
         <LogModal ref={logModalRef} />
+        {/* Create */}
         <CreateModal ref={createModalRef} callback={requestAllData} dataSource={dataSource} />
       </PageContainer>
     </div>
