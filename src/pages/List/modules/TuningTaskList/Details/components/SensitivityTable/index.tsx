@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Tooltip, message } from 'antd';
-import { request, history } from 'umi';
+import { request, history, useIntl, FormattedMessage  } from 'umi';
 import { DownOutlined, PlusCircleOutlined, MinusCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -18,6 +18,7 @@ export type TableListItem = {
 
  
 export default ({ data= {} }: any) => {
+  const { formatMessage } = useIntl();
   const { 
     bench=[], score=[],  // 一级表格的数据
     knobs=[], points= [] // 二级表格的数据
@@ -103,7 +104,7 @@ export default ({ data= {} }: any) => {
     <div className={styles.SensitivityTable}>
       <PageContainer style={{ marginTop: 20, padding:0 }}> 
         <ProTable<TableListItem>
-          headerTitle="智能调优过程信息（表）"
+          headerTitle={<FormattedMessage id="tuning-task.details.table" />}
           options={{ reload:false, setting:true, density: false }}
           size="small"
           columns={columns}
@@ -114,7 +115,9 @@ export default ({ data= {} }: any) => {
             pageSize: listPage.pageSize,
             size: "default",
             showQuickJumper: true,
-            showTotal: (total, range) => { return `共 ${total} 条记录 第 ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} 页`},
+            showTotal: (total, range) => {
+              return formatMessage({id: 'pagination.total.strip'}, {total: total, pageNum: listPage.current, pageSize: Math.ceil(total / listPage.pageSize) })
+            },
             onChange: (page, pageSize) => { setListPage({ current: page, pageSize }) },
           }}
           expandable={{

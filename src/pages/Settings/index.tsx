@@ -98,7 +98,7 @@ export default (props: any): React.ReactNode => {
 
       // 加类型颜色、格式化文案; 分组、加坐标.
       const dataSet = resetData(data)
-      console.log('dataSet:', dataSet)
+      // console.log('dataSet:', dataSet)
 
       const { groupData, groupNumber } = groupByIp(dataSet)
       // console.log('groupData:', groupData, groupNumber)
@@ -205,10 +205,10 @@ export default (props: any): React.ReactNode => {
           // step3 请求init.yaml
           requestYaml()
         } else {
-          handleRes(initRes, '生成init.yaml失败');
+          handleRes(initRes, formatMessage({id: 'init.yaml.failed'}) );
         }
       } else {
-        handleRes(res, '配置错误');
+        handleRes(res, formatMessage({id: 'configuration.error'}) );
         setTopoChartData({ data: [], links: [], group: 0, errMessage: res.msg });
       }
       setLoading(false);

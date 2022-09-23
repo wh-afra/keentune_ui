@@ -10,4 +10,7 @@ export default {
   'setting.fill.in': '填写',  
   'setting.for.example': '示例',
 
+  //
+  'init.yaml.failed': '生成init.yaml失败',
+  'configuration.error': '配置错误',
 };

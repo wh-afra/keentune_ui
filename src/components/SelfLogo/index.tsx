@@ -26,7 +26,7 @@ export default ({ logo }: any) => {
     <div style={{ marginLeft: left, cursor: 'pointer' }}>
       {show? 
         <Popover overlayClassName={'callback_home'}
-          content={<span onClick={()=> { history.push('/home') }} style={{ cursor: 'pointer' }}>返回首页</span>} placement="bottom"
+          content={<span onClick={()=> { history.push('/home') }} style={{ cursor: 'pointer' }}><FormattedMessage id='back.home.page' /></span>} placement="bottom"
         >
            {logo}
         </Popover>

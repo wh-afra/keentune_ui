@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Tooltip, message } from 'antd';
-import { request, history } from 'umi';
+import { FormattedMessage, useIntl } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -17,6 +17,7 @@ export type TableListItem = {
 };
 
 export default ({ data=[], loading=false, resultCsv }: any) => {
+  const { formatMessage } = useIntl();
   const [listPage, setListPage] = useState<any>({ current: 1, pageSize: 10 })
   // console.log('dataSource', dataSource)
   const [dataSource, setDataSource] = useState<any>([])
@@ -86,7 +87,7 @@ export default ({ data=[], loading=false, resultCsv }: any) => {
       <PageContainer style={{ marginTop: 20, padding:0 }}> 
         <ProTable<TableListItem>
           loading={loading}
-          headerTitle="参数敏感信息（表）"
+          headerTitle={<FormattedMessage id="sensitive.details.table"/>}
           options={{ reload:true, setting:true, density: false }}
           size="small"
           columns={columns}
@@ -97,7 +98,9 @@ export default ({ data=[], loading=false, resultCsv }: any) => {
             pageSize: listPage.pageSize,
             size: "default",
             showQuickJumper: true,
-            showTotal: (total, range) => { return `共 ${total} 条记录 第 ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} 页`},
+            showTotal: (total, range) => {
+              return formatMessage({id: 'pagination.total.strip'}, {total: total, pageNum: listPage.current, pageSize: Math.ceil(total / listPage.pageSize) })
+            },
             onChange: (page, pageSize) => { setListPage({ current: page, pageSize }) },
           }}
           search={false}

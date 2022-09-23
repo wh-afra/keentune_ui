@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef } from 'react';
-import { Button, Tooltip, message, Row, Col, Tag } from 'antd';
-import { request, history } from 'umi';
+import { Col, Tag } from 'antd';
+import { FormattedMessage, useIntl } from 'umi';
 import { DownOutlined, PlusCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -18,6 +18,7 @@ export type TableListItem = {
 };
 
 export default (props: any) => {
+  const { formatMessage } = useIntl();
   const { data= {}, } = props;
   const { knobs='', points= '',  }: any = data
   // console.log('props:', props)
@@ -93,7 +94,7 @@ export default (props: any) => {
 
       <ProTable<TableListItem>
         className={styles.expanded_table_style}
-        headerTitle={<>列表</>}
+        headerTitle={<><FormattedMessage id="tuning-task.details.table.subTable" /></>}
         options={{ reload:false, setting:true, density: false }}
         size="small"
         columns={columns}
@@ -104,7 +105,9 @@ export default (props: any) => {
           pageSize: listPage.pageSize,
           size: "default",
           showQuickJumper: true,
-          showTotal: (total, range) => { return `共 ${total} 条记录 第 ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} 页`},
+          showTotal: (total, range) => {
+            return formatMessage({id: 'pagination.total.strip'}, {total: total, pageNum: listPage.current, pageSize: Math.ceil(total / listPage.pageSize) })
+          },
           onChange: (page, pageSize) => { setListPage({ current: page, pageSize }) },
         }}
         search={false}

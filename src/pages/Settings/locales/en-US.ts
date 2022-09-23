@@ -1,13 +1,17 @@
 export default {
-  'env.config': '环境配置',
+  'env.config': 'Environment configuration',
   'remake': 'Remake',
-  'env.topology': '环境拓扑',
+  'env.topology': 'Environment topology',
 
-  'setting.brain': 'Keentune brain 配置',
-  'setting.benchGroup': 'Keentune bench group 配置',
-  'setting.targetGroup': 'Keentune target group 配置',
-  'setting.by.format': '请按格式填写',
+  'setting.brain': 'Keentune brain configuration',
+  'setting.benchGroup': 'Keentune bench group configuration',
+  'setting.targetGroup': 'Keentune target group configuration',
+  'setting.by.format': 'Please write in format',
   'setting.fill.in': 'Fill In',
   'setting.for.example': 'For Example',
+
+  //
+  'init.yaml.failed': 'Create init.yaml failed',
+  'configuration.error': 'Configuration error',
   
 };

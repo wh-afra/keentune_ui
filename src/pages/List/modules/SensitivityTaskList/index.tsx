@@ -3,7 +3,7 @@ import ProTable, { TableDropdown } from '@ant-design/pro-table';
 import { Button, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
-import { history, request, useIntl } from 'umi';
+import { history, request, useIntl, FormattedMessage } from 'umi';
 import moment from 'moment';
 //
 import PageContainer from '@/components/public/PageContainer';
@@ -117,7 +117,7 @@ export default () => {
         const { name } = q;
         createModalRef.current?.show({ title: 'rerun', details: { ...res.msg, name } });
       } else {
-        handleRes(res, '重跑失败');
+        handleRes(res, formatMessage({id: 'rerun.failed'}));
       }
     } catch (err) {
       setLoading(false);
@@ -131,7 +131,7 @@ export default () => {
         linkTo(row);
         break;
       case 'log':
-        logModalRef.current?.show({ title: '日志信息', url: row.log });
+        logModalRef.current?.show({ title: formatMessage({id: 'log.info'}), url: row.log });
         break;
       case 'delete':
         showDeleteConfirm(row, key) 
@@ -254,7 +254,7 @@ export default () => {
       <PageContainer style={{ marginTop: 24, padding: 0 }}>
         <ProTable<TableListItem>
           loading={loading}
-          headerTitle="敏感参数识别任务记录"
+          headerTitle={<FormattedMessage id="sensitive.title"/>}
           options={{
             reload: requestAllData,
             setting: true,
@@ -287,11 +287,7 @@ export default () => {
             size: 'default',
             showSizeChanger: true,
             showTotal: (total, range) => {
-              return `${formatMessage({ id: 'total' })} ${total} ${formatMessage({
-                id: 'records',
-              })} ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
-                id: 'page',
-              })}`;
+              return formatMessage({id: 'pagination.total.strip'}, {total: total, pageNum: listPage.current, pageSize: Math.ceil(total / listPage.pageSize) })
             },
             onChange: (page, pageSize) => { 
               setListPage({ current: page, pageSize });

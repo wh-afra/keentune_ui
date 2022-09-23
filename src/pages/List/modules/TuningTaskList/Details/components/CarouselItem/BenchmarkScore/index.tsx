@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Button, Tooltip, message, Select, Empty } from 'antd';
-import { request, history } from 'umi';
+import { FormattedMessage } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -68,7 +68,7 @@ export default ({ data={} }: any) => {
   return (
     <PageContainer title="Benchmark Score" style={{ padding:'23px 24px',height:'100%',boxShadow:'none',position:'relative' }}>
       <p className={styles.subTitle}>
-      横轴为调优轮次，纵轴为benchmark得分；每个调优轮次可能多次执行benchmark，形成多个benckmark得分，形成散点图；折线图表示每轮次benchmark的分均值
+        <FormattedMessage id="tuning-task.details.BenchmarkScore" />
       </p>
       <div className={styles.select_position}>
         <Select defaultValue="Latency" style={{ width: 180 }} onChange={handleChange} value={selected} >

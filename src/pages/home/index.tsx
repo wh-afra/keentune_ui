@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { SettingOutlined } from '@ant-design/icons';
 import { PageContainer } from '@ant-design/pro-layout';
-import { Card, Alert, Typography, Popover } from 'antd';
-import { useIntl, FormattedMessage, history } from 'umi';
+import { Popover } from 'antd';
+import { useIntl, FormattedMessage, getLocale, history } from 'umi';
 import background_logo from '@/assets/logo_background.jpg';
 import KeenTune_logo from '@/assets/KeenTune-logo.png';
 import SelectLang from '@/components/RightContent/SelectLang';
@@ -13,6 +13,7 @@ import styles from './index.less';
 
 export default (): React.ReactNode => {
   const intl = useIntl();
+  const enLocale = getLocale() === 'en-US'
 
   // 倒计时3秒，隐藏提示
   const [count, setCount] = useState(0);
@@ -32,25 +33,25 @@ export default (): React.ReactNode => {
 
         <div className={styles.title}>
           <img src={KeenTune_logo} className={styles.KeenTune_logo}/>
-          <p>KeenTune（轻豚）是一款Linux上跨平台的AI算法与专家知识库双轮驱动的全栈调优工具，能够为系统研发、运维人员在单机、集群、分布式等不</p>
-          <p style={{ marginBottom:0 }}>同系统环境提供轻量的敏感参数识别、智能参数调优、一键式专家调优的能力，也能够为算法人员提供可视化的算法优化服务。</p>
+          <p style={{ width: enLocale ? '1200px': 'unset', textAlign: 'center'}}><FormattedMessage id="home.header.title"/></p>
+          <p style={{ marginBottom:0 }}><FormattedMessage id="home.header.subtitle"/></p>
         </div>
 
         <General />
 
         <div className={styles.home_link}>
-          <span>详细信息请访问：</span>
+          <span><FormattedMessage id="home.footer.info"/>：</span>
           <a href="http://keentune.io/home" target="_blank">http://keentune.io/home</a>
         </div>
       </div>
 
       <div className={styles.position_img}>
+        {/** 中英文切换按钮 */}
         <SelectLang className={styles.action} />
-
-        <Popover content={<span>点击此处可以重新设置</span>} placement="bottom">
+        {/** 设置按钮 */}
+        <Popover content={<span><FormattedMessage id="setting.btn.info" /></span>} placement="bottom">
           <SettingOutlined className={styles.setting} onClick={()=> { history.push('/settings') }}/>
         </Popover>
-        
       </div>
     </div>
   );
