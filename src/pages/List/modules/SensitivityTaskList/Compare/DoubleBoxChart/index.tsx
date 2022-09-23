@@ -1,5 +1,6 @@
 import React from 'react';
 import { Chart, Axis, Tooltip, Schema } from 'bizcharts';
+import { useIntl } from 'umi';
 import DataSet from '@antv/data-set';
 import PageContainer from '@/components/public/PageContainer';
 
@@ -7,6 +8,7 @@ const { DataView } = DataSet;
 
 /** 双箱体 */
 export default ({ data=[], }: any)=> {
+  const { formatMessage } = useIntl();
   let dataSource: any = []
   for (let i = 0; i< data.length; i++) {
     const group = data[i].map((item: any)=> ({ group: i+1, ...item }))
@@ -86,7 +88,7 @@ export default ({ data=[], }: any)=> {
   };
     
   return (
-    <PageContainer title="敏感参数箱型图" style={{ marginTop:20,padding:'30px 42px' }}>
+    <PageContainer title={formatMessage({id: 'sensitive.Schema.Chart'})} style={{ marginTop:20,padding:'30px 42px' }}>
       <div style={{ margin:'20px 0 10px' }}>
           <Chart height={(data[0]?.length * 50 + 100)} data={dv} scale={cols} autoFit>
             <Tooltip

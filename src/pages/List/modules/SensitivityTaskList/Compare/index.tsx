@@ -76,10 +76,10 @@ export default (props: any): React.ReactNode => {
       <Breadcrumb style={{ marginTop: '20px' }}>
         <Breadcrumb.Item >
           <LinkSpan onClick={() => history.push('/list/sensitive-parameter') }>
-          敏感参数识别列表
+            <FormattedMessage id="sensitive.details.list" />
           </LinkSpan>
         </Breadcrumb.Item>
-        <Breadcrumb.Item>敏感参数-Compare</Breadcrumb.Item>
+        <Breadcrumb.Item><FormattedMessage id="menu.list.sensitivity-compare" /></Breadcrumb.Item>
       </Breadcrumb>
 
       <DoubleBoxChart data={chartData} />

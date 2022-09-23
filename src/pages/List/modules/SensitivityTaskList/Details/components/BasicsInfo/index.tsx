@@ -1,15 +1,13 @@
-import React, { useState, useCallback, useRef } from 'react';
-import { Button, Tooltip, message, Row, Col, Tag } from 'antd';
-import { request, history } from 'umi';
+import React, { useState } from 'react';
+import { Row, Col, Tag } from 'antd';
+import { useIntl } from 'umi';
 import { DownOutlined, RightOutlined } from '@ant-design/icons';
-import type { ProColumns } from '@ant-design/pro-table';
-import ProTable, { TableDropdown } from '@ant-design/pro-table';
 //
 import PageContainer from '@/components/public/PageContainer';
-import LogModal from '@/pages/List/LogModal'
 import styles from './index.less';
 
 export default ({ data = {} }: any) => {
+  const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false)
   const [expanded, setExpanded] = useState(true)
 
@@ -24,7 +22,7 @@ export default ({ data = {} }: any) => {
 
   return (
     <div className={styles.basicInfo_root} onClick={()=> setExpanded(!expanded) }>
-      <PageContainer title="任务基本信息" style={{ marginTop:20,padding:'30px 42px',position:'relative' }}> 
+      <PageContainer title={formatMessage({id: 'sensitive.basicInfo'})} style={{ marginTop:20,padding:'30px 42px',position:'relative' }}> 
       <div className={styles.expanded_icon}>
         {expanded? <DownOutlined />: <RightOutlined /> }
         </div>

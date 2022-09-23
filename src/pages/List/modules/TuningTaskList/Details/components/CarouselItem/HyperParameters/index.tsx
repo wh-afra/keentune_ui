@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button, Tooltip, message, Empty } from 'antd';
-import { request, history } from 'umi';
+import { FormattedMessage } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import type { ProColumns } from '@ant-design/pro-table';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
@@ -22,7 +22,7 @@ export default ({ data ={} }: any) => {
   return (
     <PageContainer title="Hyper Parameters" style={{ padding:'23px 24px',height: '100%',boxShadow:'none' }}>
       <p className={styles.subTitle} style={{marginRight:'-35px'}}>
-      参数得分关系图；横轴为参数值域，纵轴为不同参数；每条曲线代表一个参数配置（即一个调优轮次的结果）；曲线与多个x轴交点代表这轮调优中多个参数分别的取值；曲线颜色代表benchmark得分情况，计算mathematical loss的均值。
+        <FormattedMessage id="tuning-task.details.HyperParameters" />
       </p>
 
       {!!(knobs.length && points.length && score.length) ? 

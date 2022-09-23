@@ -3,10 +3,11 @@ import list_3 from '@/assets/list_3.png';
 import list_4 from '@/assets/list_4.png';
 import { useState, useEffect } from 'react';
 import { requestInitYaml } from '@/services';
-import { FormattedMessage, useIntl, history, request } from 'umi';
+import { FormattedMessage, useIntl, history } from 'umi';
 import styles from './index.less';
 
 export default () => {
+  const { formatMessage } = useIntl()
   // 判断用户是否已下载插件
   // const [tunDownloaded, setTunDownloaded] = useState(true ); //false
   // const [senDownloaded, setSenDownloaded] = useState(true); //false 
@@ -70,39 +71,39 @@ export default () => {
             <Template
               route="/list/profile"
               logo={list_4}
-              title="一键式专家调优"
-              text="积累多种场景下业务全栈调优的专家知识，根据业务类型对系统进行一键式优化"
+              title={formatMessage({id: 'home.profile.title'}) }
+              text={formatMessage({id: 'home.profile.text'}) }
             />
             <Template
               route="/list/tuning-task"
               logo={list_2}
-              title="智能参数调优"
-              text="提供多种高效算法，根据业务运行状态智能化调整系统全栈参数，使业务运行在最佳环境中"
+              title={formatMessage({id: 'home.tuning-task.title'}) }
+              text={formatMessage({id: 'home.tuning-task.text'}) }
               imgStyle={{ width: 67, height: 79, flexShrink: 0 }}
             />
             <Template
               route="/list/sensitive-parameter"
               logo={list_3}
-              title="敏感参数识别"
-              text="对参数进行建模识别出对结果影响度高的参数，并提供优选值范围，辅助参数可解释性和优化"
+              title={formatMessage({id: 'home.sensitive-parameter.title'}) }
+              text={formatMessage({id: 'home.sensitive-parameter.text'}) }
             />
           </>
         ) : (
           <>
             <Template2
               logo={list_4}
-              title="一键式专家调优"
-              text="积累多种场景下业务全栈调优的专家知识，根据业务类型对系统进行一键式优化"
+              title={formatMessage({id: 'home.profile.title'}) }
+              text={formatMessage({id: 'home.profile.text'}) }
             />
             <Template2
               logo={list_2}
-              title="智能参数调优"
-              text="提供多种高效算法，根据业务运行状态智能化调整系统全栈参数，使业务运行在最佳环境中"
+              title={formatMessage({id: 'home.tuning-task.title'}) }
+              text={formatMessage({id: 'home.tuning-task.text'}) }
             />
             <Template2
               logo={list_3}
-              title="敏感参数识别"
-              text="对参数进行建模识别出对结果影响度高的参数，并提供优选值范围，辅助参数可解释性和优化"
+              title={formatMessage({id: 'home.sensitive-parameter.title'}) }
+              text={formatMessage({id: 'home.sensitive-parameter.text'}) }
             />
           </>
         )}

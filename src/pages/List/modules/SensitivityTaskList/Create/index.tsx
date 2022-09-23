@@ -100,7 +100,7 @@ export default forwardRef((props: any, ref: any) => {
             initialStatus();
             props.callback();
           } else {
-            handleRes(res, '请求错误');
+            handleRes(res, formatMessage({id: 'request.failed'}) );
           }
 
         }
@@ -123,12 +123,12 @@ export default forwardRef((props: any, ref: any) => {
     // 编辑时排除与自己的校验
     if (value) {
       if (value.toLowerCase() === 'name') {
-        return Promise.reject( new Error(`不能以${value}命名!`) );
+        return Promise.reject( new Error(formatMessage({id: 'tuning-task.Form.validatorName1'}) ));
       } else if (!/^[A-Za-z0-9\_]*$/g.test(value)) {
-        return Promise.reject( new Error(`仅允许包含字母、数字、下划线!`) );
+        return Promise.reject( new Error(formatMessage({id: 'tuning-task.Form.validatorName2'}) ) );
       }
       return dataSource?.filter((item: any) => item.name === value).length
-        ? Promise.reject( new Error('Name名字重复!') )
+        ? Promise.reject( new Error(formatMessage({id: 'tuning-task.Form.validatorName3'}) ) )
         : Promise.resolve();
     }
     return Promise.resolve();
@@ -138,7 +138,7 @@ export default forwardRef((props: any, ref: any) => {
   // 请输入正整数
   const validatorNumber = (_: any, value: any) => {
     if (value || value == 0) {
-      return /(^[1-9]\d*$)/.test(value) ? Promise.resolve(): Promise.reject(new Error('只能输入正整数'))
+      return /(^[1-9]\d*$)/.test(value) ? Promise.resolve(): Promise.reject(new Error(formatMessage({id: 'tuning-task.Form.validatorNumber'}) ))
     }
     return Promise.resolve();
   };
@@ -191,18 +191,18 @@ export default forwardRef((props: any, ref: any) => {
             label="Name"
             name="name"
             rules={[
-              { required: true, max: 200, message: '请输入Name' },
+              { required: true, max: 200, message: formatMessage({id: 'tuning-task.Form.name.message'})  },
               { validator: validatorName },
             ]}
           >
-            <Input placeholder="请输入" autoComplete="off" />
+            <Input placeholder={formatMessage({id: 'please.enter'})} autoComplete="off" />
           </Form.Item>
 
           <Form.Item label="Data" name="data" rules={[{ required: true, message: '请输入Data' }]}>
             <Select
               allowClear
               style={{ width: '100%' }}
-              placeholder="请选择"
+              placeholder={formatMessage({id: 'please.select'})}
               notFoundContent={fetching ? <Spin size="small" /> : null}
               getPopupContainer={(node) => node.parentNode}
               onBlur={handleSearchData}
@@ -226,12 +226,12 @@ export default forwardRef((props: any, ref: any) => {
           <Form.Item
             label="Algorithm"
             name="algorithm"
-            rules={[{ required: true, message: '请输入Algorithm' }]}
+            rules={[{ required: true, message: formatMessage({id: 'tuning-task.Form.algorithm.message'}) }]}
           >
             <Select
               allowClear
               style={{ width: '100%' }}
-              placeholder="请选择"
+              placeholder={formatMessage({id: 'please.select'})}
               notFoundContent={fetching ? <Spin size="small" /> : null}
               getPopupContainer={(node) => node.parentNode}
               // onChange={productOnChange}
@@ -255,11 +255,11 @@ export default forwardRef((props: any, ref: any) => {
                 className={styles.last_form_Item}
                 name="trial"
                 rules={[
-                  { required: true, message: '请输入Trial' },
+                  { required: true, message: formatMessage({id: 'sensitive.Form.trial.message'}) },
                   { validator: validatorNumber },
                 ]}
               >
-                <InputNumber min={1} max={10} placeholder="数值" style={{ width: '100%' }} />
+                <InputNumber min={1} max={10} placeholder={formatMessage({id: 'number.value'})} style={{ width: '100%' }} />
               </Form.Item>
 
            {/* <Row gutter={16}>

@@ -11,7 +11,7 @@ import LogModal from '@/pages/List/LogModal'
 import SetModal from './Set'
 import CreateModal from './Create'
 import Count from './Count'
-import { handleRes, useClientSize, dataDealWith, statusEnum, viewDetails } from '@/uitls/uitls'
+import { handleRes, statusEnum, viewDetails } from '@/uitls/uitls'
 import { getRequestData } from './service'
 import { resetTableData } from './dataDealWith'
 import styles from './index.less';

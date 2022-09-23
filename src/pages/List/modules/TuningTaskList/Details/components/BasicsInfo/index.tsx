@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Tooltip, message, Row, Col, Tag, Popover } from 'antd';
-import { request, history } from 'umi';
+import { request, history, useIntl, FormattedMessage } from 'umi';
 import { RightOutlined, DownOutlined, InfoCircleOutlined, CopyOutlined } from '@ant-design/icons';
 //
 import PageContainer from '@/components/public/PageContainer';
@@ -12,6 +12,7 @@ import { useClientSize, dataDealWith, viewDetails } from '@/uitls/uitls'
 import styles from './index.less';
 
 export default ({ data = {}, algorithmRunTime }: any) => {
+  const { formatMessage } = useIntl();
   // 状态
   const [expanded, setExpanded] = useState(true)
   const [otherData, setOtherData] = useState<any>({})
@@ -69,13 +70,13 @@ export default ({ data = {}, algorithmRunTime }: any) => {
 
   return (
     <div className={styles.basicInfo_root}>
-      <PageContainer title="基本信息" style={{ marginTop:20,padding:'30px 42px',position:'relative'}}>
+      <PageContainer title={formatMessage({ id: 'tuning-task.basicInfo' })} style={{ marginTop:20,padding:'30px 42px',position:'relative'}}>
         <div className={styles.expanded_icon}>
         {expanded? <DownOutlined onClick={()=> setExpanded(false) } />: <RightOutlined onClick={()=> setExpanded(true) }/> }
         </div>
         {expanded?
           <>
-            <p style={{marginTop:30}}><InfoCircleOutlined className={styles.basicInfo_icon} />调优任务信息：</p>
+            <p style={{marginTop:30}}><InfoCircleOutlined className={styles.basicInfo_icon} /><FormattedMessage id="tuning-task.tuning-task.info" /></p>
             <Row className={styles.tag_row}>
               <RowItem label="Job Name"  value={data.name} />
               <RowItem label="Status"  value={data.status} />
@@ -86,8 +87,8 @@ export default ({ data = {}, algorithmRunTime }: any) => {
               <RowItem label="StartTime"  value={data.start_time} />
               <RowItem label="EndTime"  value={data.end_time} />
               <RowItem label="Algorithm Running Time"  value={algorithmRunTime} />
-              <RowItem label="命令行"  value={cmdStr} valueWidth={350} onCopy={()=> copyText(cmdStr)}/>
-              <RowItem label="任务日志"  value={data.log} linkTo={data.log} /*onClick={()=> viewDetails(data.log, data.log)}*/ />
+              <RowItem label={formatMessage({ id: 'tuning-task.command' })}  value={cmdStr} valueWidth={350} onCopy={()=> copyText(cmdStr)}/>
+              <RowItem label={formatMessage({ id: 'tuning-task.task' })}  value={data.log} linkTo={data.log} /*onClick={()=> viewDetails(data.log, data.log)}*/ />
             {/* </Row>
             <div className={styles.divider_line}></div>
             <p><InfoCircleOutlined className={styles.basicInfo_icon}/>Benchmark信息：</p>

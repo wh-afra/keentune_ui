@@ -285,10 +285,10 @@ export default (props: any) => {
           {color: 'rgb(21,151,165)', text: 'Top 70%~90%'}, 
           {color: 'rgb(14,96,107)', text: 'last 10%'},
         ].map((item: any, i: any)=>
-          <>
+          <div key={item.text} style={{display: 'flex',alignItems: 'center',marginRight: '20px'}}>
             <div className={styles.color_block} style={{background: item.color}}/>
             <span>{item.text}</span>
-          </>
+          </div>
         )}
       </div>
        

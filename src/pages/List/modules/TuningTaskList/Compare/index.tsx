@@ -57,10 +57,12 @@ export default (props: any = {}): React.ReactNode => {
       <Breadcrumb style={{ margin: '20px 0' }}>
         <Breadcrumb.Item >
           <LinkSpan onClick={() => history.push('/list/tuning-task') }>
-            参数调优列表
+            <FormattedMessage id="tuning-task.details.list"/>
           </LinkSpan>
         </Breadcrumb.Item>
-        <Breadcrumb.Item>任务对比</Breadcrumb.Item>
+        <Breadcrumb.Item>
+          <FormattedMessage id="tuning-task.task.compare"/>
+        </Breadcrumb.Item>
       </Breadcrumb>
 
       {/** 轮播 */}

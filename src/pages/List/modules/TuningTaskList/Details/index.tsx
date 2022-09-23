@@ -14,6 +14,7 @@ import styles from './index.less';
 const LinkSpan = styled.span`cursor:pointer;`
 
 export default (props: any = {}): React.ReactNode => {
+  const { formatMessage } = useIntl();
   const { history = {} } = props
   const { location = {} } = history
   const state = location?.query || {}
@@ -90,17 +91,17 @@ export default (props: any = {}): React.ReactNode => {
   const algorithmRunTime = tempList.length && tempList.reduce((acc: any, cur: any) => {
     const count = (myIsNaN(acc) ? acc : acc.value) + cur.value
     return count
-  }).toString()
+  }).toFixed(2) + 's'
   
   return (
     <div>
       <Breadcrumb style={{ margin: '20px 0' }}>
         <Breadcrumb.Item >
           <LinkSpan onClick={() => history.push('/list/tuning-task') }>
-            参数调优列表
+            <FormattedMessage id="tuning-task.details.list"/>
           </LinkSpan>
         </Breadcrumb.Item>
-        <Breadcrumb.Item>任务详情</Breadcrumb.Item>
+        <Breadcrumb.Item><FormattedMessage id="tuning-task.details"/></Breadcrumb.Item>
       </Breadcrumb>
 
       <BasicInfo data={state} algorithmRunTime={algorithmRunTime} />

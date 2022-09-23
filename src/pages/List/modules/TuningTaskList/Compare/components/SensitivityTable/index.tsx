@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button, Tooltip, message, Popover } from 'antd';
-import { request, history } from 'umi';
+import { useIntl, FormattedMessage, request, history } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
 //
@@ -15,6 +15,7 @@ import styles from './index.less'
  * 调优任务页面
  */
 export default ({ data=[] }: any) => {
+  const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false)
   const logModalRef: any = useRef(null)
  
@@ -44,7 +45,7 @@ export default ({ data=[] }: any) => {
     switch (key) {
       case 'details': linkTo(row); break
       case 'delete': break
-      case 'log': logModalRef.current?.show({ title: '日志信息', url: row.log }); break
+      case 'log': logModalRef.current?.show({ title: formatMessage({id: 'log.info'}), url: row.log }); break
       default: null
     }
   }
@@ -148,7 +149,7 @@ export default ({ data=[] }: any) => {
     <div className={styles.SensitivityTable}>
       <PageContainer style={{ marginTop: 20, padding:0 }}>
         <ProTable
-          headerTitle="对比任务列表"
+          headerTitle={<FormattedMessage id="tuning-task.task.compare.table"/>}
           options={{ density: false }}
           size="small"
           columns={columns}
