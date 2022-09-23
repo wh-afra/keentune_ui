@@ -1,9 +1,11 @@
 import { requestData } from '@/services';
-import { dataDealWith, handleRes, sensitivityAlgorithm } from '@/uitls/uitls';
+import { dataDealWith, handleRes } from '@/uitls/uitls';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { Button, Col, Form, Input, InputNumber, Modal, Row, Select, Space, Spin } from 'antd';
-import { forwardRef, useImperativeHandle, useState } from 'react';
+import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import { FormattedMessage, request, useIntl } from 'umi';
+import { requestInitYaml } from '@/services';
+import yaml from 'js-yaml';
 import styles from './index.less';
 
 /**
@@ -16,6 +18,7 @@ export default forwardRef((props: any, ref: any) => {
   const [visible, setVisible] = useState(false);
   const [title, setTitle] = useState('create');
   const [form] = Form.useForm();
+  const [algorithmList, setAlgorithmList] = useState<any>([]);
   // Select
   const [fetching, setFetching] = useState(false);
   const [data, setData] = useState<any>([]);
@@ -55,6 +58,25 @@ export default forwardRef((props: any, ref: any) => {
       }
     },
   }));
+
+  useEffect(()=> {
+    getYamlData()
+  }, [])
+
+  // 1.请求yaml
+  const getYamlData = async (q?: any) => {
+    try {
+      const content: any = await requestInitYaml()
+      // yaml文件 -> json
+      let result = yaml.load(content);
+      const { brain }: any = result || {}
+      const { algo_sensi = [], algo_tuning = [] }: any = brain || {}
+      setAlgorithmList(algo_sensi)
+    } catch (err) {
+       console.log(err)
+    }
+  };
+
 
   // 提交
   const onSubmit = () => {
@@ -101,10 +123,12 @@ export default forwardRef((props: any, ref: any) => {
     // 编辑时排除与自己的校验
     if (value) {
       if (value.toLowerCase() === 'name') {
-        return Promise.reject(new Error(`不能以${value}命名!`));
+        return Promise.reject( new Error(`不能以${value}命名!`) );
+      } else if (!/^[A-Za-z0-9\_]*$/g.test(value)) {
+        return Promise.reject( new Error(`仅允许包含字母、数字、下划线!`) );
       }
       return dataSource?.filter((item: any) => item.name === value).length
-        ? Promise.reject(new Error('Name名字重复!'))
+        ? Promise.reject( new Error('Name名字重复!') )
         : Promise.resolve();
     }
     return Promise.resolve();
@@ -137,10 +161,9 @@ export default forwardRef((props: any, ref: any) => {
     <Modal
       title={
         <Space>
-          <ExclamationCircleOutlined style={{ fontSize: 20, color: '#008dff' }} />
           <FormattedMessage id={title} />
         </Space>
-      }
+      } // <ExclamationCircleOutlined style={{ fontSize: 20, color: '#008dff' }} />
       visible={visible}
       maskClosable={true}
       width={400}
@@ -167,7 +190,10 @@ export default forwardRef((props: any, ref: any) => {
           <Form.Item
             label="Name"
             name="name"
-            rules={[{ required: true, message: '请输入Name' }, { validator: validatorName }]}
+            rules={[
+              { required: true, max: 200, message: '请输入Name' },
+              { validator: validatorName },
+            ]}
           >
             <Input placeholder="请输入" autoComplete="off" />
           </Form.Item>
@@ -217,7 +243,7 @@ export default forwardRef((props: any, ref: any) => {
                 return option.children.toLowerCase().indexOf(input.toLowerCase()) >= 0;
               }}
             >
-              {sensitivityAlgorithm.map((item: any) => (
+              {algorithmList.map((item: any) => (
                 <Select.Option key={item} value={item}>
                   {item}
                 </Select.Option>

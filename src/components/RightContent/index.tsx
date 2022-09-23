@@ -1,7 +1,7 @@
-import { Space } from 'antd';
+import { Space, Popover  } from 'antd';
 import { QuestionCircleOutlined, SettingOutlined } from '@ant-design/icons';
 import React from 'react';
-import { useModel, history } from 'umi'; // SelectLang
+import { useModel, history} from 'umi'; // SelectLang
 import SelectLang from './SelectLang';
 import Avatar from './AvatarDropdown';
 import styles from './index.less';
@@ -22,12 +22,13 @@ const GlobalHeaderRight: React.FC = () => {
     className = `${styles.right}  ${styles.dark}`;
   }
   return (
-    <Space className={className} size={16}>
+    <Space className={className} size={0}>
       {/* 国际化方案 */}
       <SelectLang className={styles.action} />
-
       <div className={styles.setting}>
-        <SettingOutlined onClick={()=> { history.push('/settings') }}/>
+        <Popover content={<span>点击此处可以重新设置</span>} placement="bottomRight">
+          <SettingOutlined onClick={()=> { history.push('/settings') }}/>
+        </Popover>
       </div>
     </Space>
   );

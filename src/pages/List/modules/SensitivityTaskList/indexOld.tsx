@@ -4,7 +4,6 @@ import { Button, Modal } from 'antd';
 import { useEffect, useRef, useState } from 'react';
 import { ExclamationCircleOutlined } from '@ant-design/icons';
 import { history, request, useIntl } from 'umi';
-import moment from 'moment';
 //
 import PageContainer from '@/components/public/PageContainer';
 import LogModal from '@/pages/List/LogModal';
@@ -28,8 +27,12 @@ export default () => {
   const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false);
   const [dataSource, setDataSource] = useState<any[]>([]);
-  const [listPage, setListPage] = useState<any>({ current: 1, pageSize: 20 })
-
+  const [listPage, setListPage] = useState<any>({
+    pageNum: 1,
+    pageSize: 20,
+    rows: [],
+    total: 0,
+  });
   const [selectedRowKeys, setSelectedRowKeys] = useState<any[]>([]);
   const logModalRef: any = useRef(null);
   const createModalRef: any = useRef(null);
@@ -37,18 +40,16 @@ export default () => {
   // 初始化状态
   const initialStatus = () => {
     setListPage({
-      current: 1, 
+      pageNum: 1,
       pageSize: 20,
+      rows: [],
+      total: 0,
     });
   };
 
   // 初始化请求数据
   const requestAllData = async (q?: any) => {
-    // case1.清空选中项
-    setSelectedRowKeys([]);
-    // case2.数据
     setLoading(true);
-
     try {
       const strData = await request('/var/keentune/sensitize_jobs.csv', {
         skipErrorHandler: true,
@@ -57,6 +58,13 @@ export default () => {
       const data = dataDealWith(strData);
       if (data && data.length) {
         setDataSource(data);
+        // 前端分页
+        setListPage({
+          pageNum: 1,
+          pageSize: listPage.pageSize,
+          rows: data.slice(0, listPage.pageSize),
+          total: data.length,
+        });
       }
       setLoading(false);
     } catch (err) {
@@ -68,6 +76,24 @@ export default () => {
     requestAllData();
   }, []);
 
+  // 前端分页
+  const getTableData = (q: any) => {
+    // case1.清空选中项
+    setSelectedRowKeys([]);
+    // case2.数据分页
+    const { pageNum, pageSize } = q;
+    if (dataSource && dataSource.length) {
+      const start = (pageNum - 1) * pageSize;
+      setListPage({
+        pageNum,
+        pageSize,
+        rows: dataSource.slice(start, start + pageSize),
+        total: listPage.total,
+      });
+    } else {
+      initialStatus();
+    }
+  };
 
   // 删除弹框
   const showDeleteConfirm = (row: any, key: string) => {
@@ -188,7 +214,7 @@ export default () => {
       dataIndex: 'start_time',
       key: 'start_time',
       width: 166,
-      sorter: (a: any, b: any) => moment(a.start_time).unix() - moment(b.start_time).unix(),
+      sorter: (a: any, b: any) => a.start_time - b.start_time,
       render: (text: any, row: any) => {
         return <span>{text}</span>;
       },
@@ -198,7 +224,7 @@ export default () => {
       dataIndex: 'end_time',
       key: 'end_time',
       width: 166,
-      sorter: (a: any, b: any) => moment(a.end_time).unix() - moment(b.end_time).unix(),
+      sorter: (a: any, b: any) => a.end_time - b.end_time,
       render: (text: any, row: any) => {
         return <span>{text}</span>;
       },
@@ -262,7 +288,7 @@ export default () => {
           }}
           size="small"
           columns={columns}
-          dataSource={dataSource}
+          dataSource={listPage.rows}
           rowSelection={{
             hideSelectAll: true,
             columnWidth: 47,
@@ -281,20 +307,21 @@ export default () => {
           tableAlertOptionRender={() => false}
           rowKey="name"
           pagination={{
-            current: listPage.current,
+            current: listPage.pageNum,
             pageSize: listPage.pageSize,
-            total: dataSource.length,
+            total: listPage.total,
             size: 'default',
             showSizeChanger: true,
             showTotal: (total, range) => {
               return `${formatMessage({ id: 'total' })} ${total} ${formatMessage({
                 id: 'records',
-              })} ${listPage.current} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
+              })} ${listPage.pageNum} / ${Math.ceil(total / listPage.pageSize)} ${formatMessage({
                 id: 'page',
               })}`;
             },
-            onChange: (page, pageSize) => { 
-              setListPage({ current: page, pageSize });
+            onChange: (page, pageSize) => {
+              const tempPage = pageSize !== listPage.pageSize ? 1 : page;
+              getTableData({ pageNum: tempPage, pageSize });
             },
           }}
           search={false}

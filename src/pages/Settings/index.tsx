@@ -30,6 +30,7 @@ export default (props: any): React.ReactNode => {
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
   const [loading, setLoading] = useState<any>(false);
+  const [remakeLoading, setRemakeLoading] = useState<any>(false);
   //
   const [showBrainExample, setShowBrainExample] = useState<any>(false); // 展示示例
   const [showBenchExample, setShowBenchExample] = useState<any>(false); // 展示示例
@@ -42,13 +43,6 @@ export default (props: any): React.ReactNode => {
   useEffect(()=>{
     requestYaml()
   }, [])
-
-  const fn = (key: string)=> {
-    switch (key) {
-      case 'remake':  break
-      default: null
-    }
-  }
   
   const LabelRow = ({ label, state, setState }: any)=> (
     <div className={styles.variableLabel}>
@@ -92,7 +86,7 @@ export default (props: any): React.ReactNode => {
         );
   };
 
-  // 请求init.yaml文件
+  // 请求init.yaml
   const requestYaml = async (q?: any) => {
     try {
       const content: any = await requestInitYaml();
@@ -100,10 +94,12 @@ export default (props: any): React.ReactNode => {
       // yaml文件 -> json
       let result = yaml.load(content);
       const data = dealWith(result)
-      // console.log('data:', data)
+      
 
       // 加类型颜色、格式化文案; 分组、加坐标.
       const dataSet = resetData(data)
+      console.log('dataSet:', dataSet)
+
       const { groupData, groupNumber } = groupByIp(dataSet)
       // console.log('groupData:', groupData, groupNumber)
 
@@ -116,20 +112,20 @@ export default (props: any): React.ReactNode => {
           // symbolSize: 50,
           itemStyle: { 
             color: item.color, //圆圈的填充色
+            borderColor: '#000', //圆圈的黑色边框 
+            borderWidth: 1,
+
           },
           label: {
             show: true,
             position: item.position,
             // 格式化显示文本
             formatter: [
-              '{a|'+ item.type +'}',
+              '{a|'+ item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase()) +'('+ item.type +')'+'}',
               item.desc && (
                 Array.isArray(item.desc) ? item.desc.map((key: any)=> '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
               ),
-              item.type === 'Target' && (
-                '{x|'+ item.ip +'}'
-              )
             ].flat().filter(item=> item).join('\n'),
             rich: {
               a: {
@@ -140,7 +136,9 @@ export default (props: any): React.ReactNode => {
               },
               b: {
                   color: '#003',
-                  fontSize: 12,
+                  lineHeight: 16,
+                  fontSize: 14,
+                  fontWeight: 400,
               },
               x: {
                   color: '#000',
@@ -161,24 +159,27 @@ export default (props: any): React.ReactNode => {
         return q
       })
       // case2.生成连线规则关系
-      const bench = groupData.filter(({type}: any)=> ['Bench', 'Target'].includes(type)).map((item: any)=> (
-        {
-          source: item.type === 'Target'? 'localhost': item.id,
-          target: item.type === 'Target'? item.id: item.destination,
+      const bench = groupData.filter(({type}: any)=> /^Target-group-[0-9]+$/.test(type) || type === 'Bench' )
+      .map((item: any)=> {
+        const Target = /^Target-group-[0-9]+$/.test(item.type)
+        return {
+          source: Target ? 'localhostkeentuned': item.id,
+          target: Target ? item.id: item.destination,
           symbolSize: [1, 8],
           label: { 
             show: true,
             fontSize: 12,
             padding: [0, 0, 0, 0],
-            formatter: item.type === 'Target'? item.knobs : item.benchmark,
+            formatter: Target ? item.knobs : item.benchmark,
           },
           lineStyle: {
             width: 2,
-            curveness: item.type === 'Target'? -0.3: -0.2,
-            color: item.type === 'Target'? '#11606b': item.color, //连线颜色
+            curveness: 0.2,
+            color: Target ? '#11606b': item.color, //连线颜色
+
           }
         }
-      ))
+      })
 
       setTopoChartData({ dataSource, links: bench, groupNumber, errMessage: '' })
     } catch (err) {
@@ -186,21 +187,22 @@ export default (props: any): React.ReactNode => {
     }
   };
 
-  // 请求生成keentuned.conf文件
+  // 请求生成keentuned.conf
   const getFormData = () => {
     setLoading(true);
     form.validateFields().then(async (values: any) => {
       const { brain, benchGroup, targetGroup } = values || {};
       const info = brain + '\n' + benchGroup + '\n' + targetGroup
-      // 生成keentuned.conf
+      // step1 生成keentuned.conf
       const res = await requestData('POST', '/write', {name: 'keentuned.conf', info });
       if (res.suc) {
         // 等待200毫秒
         await waitTime(200);
-        // 生成init.yaml
+
+        // step2 生成init.yaml
         const initRes = await requestData('POST', '/cmd', {cmd: `keentune init`});
         if (initRes.suc) {
-          // 请求 init.yaml
+          // step3 请求init.yaml
           requestYaml()
         } else {
           handleRes(initRes, '生成init.yaml失败');
@@ -214,7 +216,8 @@ export default (props: any): React.ReactNode => {
       setLoading(false);
     })
   }
-  const handleOk = () => {
+
+  const handleCheck = () => {
     if (!showBrainExample && !showBenchExample && !showTargetExample) {
       getFormData();
     } else {
@@ -230,6 +233,19 @@ export default (props: any): React.ReactNode => {
       getFormData();
     }
   }, [showBrainExample, showBenchExample, showTargetExample]);
+
+
+  // Remake时，仅重新请求yaml
+  const handleRemake = async () => {
+    setRemakeLoading(true)
+    // 重置Chart数据
+    setTopoChartData({ dataSource: [], links: [], groupNumber: 0, errMessage: '' })
+    // 等待200毫秒
+    await waitTime(200);
+    setRemakeLoading(false)
+    // 请求yaml
+    requestYaml()
+  }
 
   return (
     <div className={styles.settings_root}>
@@ -324,13 +340,15 @@ export default (props: any): React.ReactNode => {
             <Col span={2} className={styles.center_layout}>
               <div>
                 <Spin spinning={loading}>
-                  <CheckIcon onClick={handleOk} />
+                  <CheckIcon onClick={handleCheck} />
                 </Spin>
               </div>
               <div style={{marginBottom:'-35px'}}>
-                <Tooltip placement="bottom" title={ formatMessage({ id: 'remake', defaultMessage: 'Remake' }) }>
-                  <RemakeIcon onClick={()=> fn('remake')} />
-                </Tooltip>
+                <Spin spinning={remakeLoading}>
+                  <Tooltip placement="bottom" title={ formatMessage({ id: 'remake', defaultMessage: 'Remake' }) }>
+                    <RemakeIcon onClick={handleRemake} />
+                  </Tooltip>
+                </Spin>
               </div>
             </Col>
 
