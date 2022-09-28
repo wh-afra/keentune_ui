@@ -9,6 +9,7 @@ export default {
   'setting.by.format': 'Please write in format',
   'setting.fill.in': 'Fill In',
   'setting.for.example': 'For Example',
+  'setting.,': 'Please use English "," to separate',
 
   //
   'init.yaml.failed': 'Create init.yaml failed',

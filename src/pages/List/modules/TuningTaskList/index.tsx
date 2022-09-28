@@ -192,7 +192,7 @@ export default () => {
           <PopoverEllipsis
             title={tempUrl}
             onClick={() =>
-              logModalRef.current?.show({ title: '【Target Group】文件', url: tempUrl })
+              logModalRef.current?.show({ title: formatMessage({id: 'tuning-task.Configuration'}), url: tempUrl })
             }
           />
         );

@@ -37,9 +37,9 @@ const Index: React.FC<Topo> = (props: any)=> {
     let myChart: any = chart
     if (myChart && data.length) {
         let option: any = {
-          title: {
-            text: title,
-          },
+          // title: {
+          //   text: title,
+          // },
           tooltip: { show: false},
           animationDurationUpdate: 1500,
           animationEasingUpdate: 'quinticInOut',

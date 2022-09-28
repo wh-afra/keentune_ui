@@ -21,10 +21,10 @@ export default ({ data = {} }: any) => {
   }
 
   return (
-    <div className={styles.basicInfo_root} onClick={()=> setExpanded(!expanded) }>
+    <div className={styles.basicInfo_root}>
       <PageContainer title={formatMessage({id: 'sensitive.basicInfo'})} style={{ marginTop:20,padding:'30px 42px',position:'relative' }}> 
       <div className={styles.expanded_icon}>
-        {expanded? <DownOutlined />: <RightOutlined /> }
+        {expanded? <DownOutlined onClick={()=> setExpanded(false) } />: <RightOutlined onClick={()=> setExpanded(true) }/> }
         </div>
         {expanded?
         <Row className={styles.tag_row}>

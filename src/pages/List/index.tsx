@@ -2,6 +2,7 @@ import React from 'react';
 import { PageLoading } from '@ant-design/pro-layout';
 import { Card, Alert, Typography } from 'antd';
 import { useIntl, FormattedMessage } from 'umi';
+import Footer from '@/components/Footer';
 import { useClientSize } from '@/uitls/uitls';
 import styles from './index.less';
 
@@ -19,7 +20,7 @@ export default (props: any): React.ReactNode => {
   return (
     <div className={styles.list_root} style={{ marginLeft }}>
       <div className={styles.content}>
-         {props.children}
+        {props.children}
       </div>
     </div>
   );

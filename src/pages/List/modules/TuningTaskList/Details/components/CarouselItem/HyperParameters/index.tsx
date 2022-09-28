@@ -20,7 +20,7 @@ export default ({ data ={} }: any) => {
   const restScore = colorDealWith(score);
 
   return (
-    <PageContainer title="Hyper Parameters" style={{ padding:'23px 24px',height: '100%',boxShadow:'none' }}>
+    <PageContainer title="Parameters & Values" style={{ padding:'23px 24px',height: '100%',boxShadow:'none' }}>
       <p className={styles.subTitle} style={{marginRight:'-35px'}}>
         <FormattedMessage id="tuning-task.details.HyperParameters" />
       </p>

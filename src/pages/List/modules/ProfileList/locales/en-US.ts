@@ -1,5 +1,5 @@
 export default {
-  'ProfileList.validateInfo1': 'The data format of line',
+  'ProfileList.validateInfo1': 'Row {data}',
   'ProfileList.validateInfo2': 'is incorrect!',
   'fill.in': 'Fill in',
   'examples': 'Examples',

@@ -58,7 +58,7 @@ export default ({ data = [], baselineList=[] }: any)=> {
 							position: "end",
 							/** 显示的文本内容 */
 							content: `Baseline ${item.baseline}`,
-							offsetX: -100,
+							offsetX: -100 - i * 120,
 							offsetY: -5,
 							style: {
 								fill: item.color,
