@@ -58,10 +58,12 @@ export default ({ data = {}, algorithmRunTime }: any) => {
       },
     })
     clipboard.on('success', function (e: any) {
+      message.success(formatMessage({ id: 'copy.success' }), 1)
       e.clearSelection();
       clipboard.destroy()
     })
     clipboard.on("error", function(e){
+      message.error(formatMessage({ id: 'copy.failed' }), 1)
       clipboard.destroy(); 
     });
   }

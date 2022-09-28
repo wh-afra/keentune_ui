@@ -2,6 +2,8 @@ export default {
   'request.failed': '请求错误',
   'log.info': '日志信息',
   'rerun.failed': '重跑失败',
+  'copy.success': '复制成功',
+  'copy.failed': '复制失败',
   'number.value': '数值',
   'no.data': '暂无数据!',
 
@@ -17,6 +19,7 @@ export default {
   'tuning-task.details.HyperParameters': '参数得分关系图；横轴为参数值域，纵轴为不同参数；每条曲线代表一个参数配置（即一个调优轮次的结果）；曲线与多个x轴交点代表这轮调优中多个参数分别的取值；曲线颜色代表benchmark得分情况，计算mathematical loss的均值。',
   'tuning-task.details.table': '智能调优过程信息（表）',
   'tuning-task.details.table.subTable': '列表',
+  'tuning-task.Configuration': '【keentuned.conf】文件',
   // create
   'tuning-task.Form.name.message': '请输入Name',
   'tuning-task.Form.algorithm.message': '请选择Algorithm',

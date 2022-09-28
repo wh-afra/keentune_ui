@@ -7,8 +7,7 @@
     max-width: 1280px;
     width: 1280px;
 
-
-    .title { 
+    .title {
       padding: 24px 0; margin-bottom: 0px;
       font-family:  PingFangSC;
       font-weight: 600;
@@ -18,6 +17,12 @@
     :global {
       .ant-form-item-label { display: flex; }
       .ant-form-item-label > label { flex: 1; }
+      // 文本域产生滚动条时，删除图标需要左移一点。
+      .ant-form-item-control { 
+        .ant-input-affix-wrapper-textarea-with-clear-btn .ant-input-clear-icon {
+          right: 19px;
+        }
+      }
     }
     // Label
     .variableLabel {
@@ -40,6 +45,7 @@
       justify-content: center;
       align-items: center;
       flex-direction: column;
+      margin-top: -180px;
       & > div { 
         margin: 10px 0; 
         cursor: pointer;

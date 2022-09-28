@@ -29,6 +29,7 @@ export default ({ code , onChange, readOnly= true, lineNumbers= false, height = 
     }, [codemirrorRef, height])
 
     return (
+      <div id="code_wrapper">
         <CodeMirror ref={codemirrorRef}
             value={ statusCode }
             className={ styles.code_wrapper}
@@ -42,5 +43,6 @@ export default ({ code , onChange, readOnly= true, lineNumbers= false, height = 
             }}
             onBeforeChange={( editor: any , data: any , value: any ) => onChange( value )}
         />
+      </div>
     )
 }

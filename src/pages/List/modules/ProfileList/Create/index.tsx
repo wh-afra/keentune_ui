@@ -139,7 +139,7 @@ export default forwardRef((props: any, ref: any) => {
       }
     }
     return validate ? Promise.resolve(): Promise.reject(new Error(
-      `${formatMessage({id: 'ProfileList.validateInfo1'})} ${row} ${formatMessage({id: 'ProfileList.validateInfo2'})}`
+      `${formatMessage({id: 'ProfileList.validateInfo1'}, {data: row})} ${formatMessage({id: 'ProfileList.validateInfo2'})}`
     ))
   }
 

@@ -3,6 +3,7 @@ import { Button, Tooltip, message, Popover } from 'antd';
 import { useIntl, FormattedMessage, request, history } from 'umi';
 import { DownOutlined, QuestionCircleOutlined } from '@ant-design/icons';
 import ProTable, { TableDropdown } from '@ant-design/pro-table';
+import moment from 'moment';
 //
 import PageContainer from '@/components/public/PageContainer';
 import PopoverEllipsis from '@/components/public/PopoverEllipsis';
@@ -18,26 +19,6 @@ export default ({ data=[] }: any) => {
   const { formatMessage } = useIntl();
   const [loading, setLoading] = useState(false)
   const logModalRef: any = useRef(null)
- 
-  // const getTableData = async (q: any)=> {
-  //   setLoading(true);
-  //   try {
-  //     const data = await request('/var/keentune/tuning_jobs.csv', { skipErrorHandler: true })
-  //     const dataSource = dataDealWith(data)
-  //     setLoading(false);
-  //     return Promise.resolve({
-  //       data: dataSource,
-  //       success: true,
-  //     });
-  //   } catch (err) {
-  //     // message.error('查询数据失败！');
-  //     setLoading(false);
-  //     return Promise.resolve({
-  //       data: [],
-  //       success: false,
-  //     });
-  //   }
-  // }
 
   const linkTo = (row: any)=> history.push({pathname: '/list/tuning-task/details', query: row })
   const fn = (key: string, row: any)=> {
@@ -120,7 +101,7 @@ export default ({ data=[] }: any) => {
       key: 'start_time',
       width: 166,
       // valueType: 'date',
-      sorter: (a: any, b: any) => a.start_time - b.start_time,
+      sorter: (a: any, b: any) => moment(a.start_time).unix() - moment(b.start_time).unix(),
       render: (text: any, row: any) => {
         return <span onClick={()=> linkTo(row)}>{text}</span>
       },
@@ -130,7 +111,7 @@ export default ({ data=[] }: any) => {
       dataIndex: 'end_time',
       key: 'end_time',
       width: 166,
-      sorter: (a: any, b:any) => a.end_time - b.end_time,
+      sorter: (a: any, b:any) => moment(a.end_time).unix() - moment(b.end_time).unix(),
       render: (text: any, row: any) => {
         return <span onClick={()=> linkTo(row)}>{text}</span>
       },

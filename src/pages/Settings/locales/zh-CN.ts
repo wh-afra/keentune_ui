@@ -9,6 +9,7 @@ export default {
   'setting.by.format': '请按格式填写',
   'setting.fill.in': '填写',  
   'setting.for.example': '示例',
+  'setting.,': '请使用英文“,”分隔',
 
   //
   'init.yaml.failed': '生成init.yaml失败',

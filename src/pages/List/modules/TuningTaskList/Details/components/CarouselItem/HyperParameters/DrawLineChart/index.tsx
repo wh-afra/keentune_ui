@@ -57,9 +57,9 @@ export default (props: any) => {
   
 
   // 设置数据
-  const lineHight = 80; // 间距设置
-  const lineStartX = 260 // 横线起点x坐标
-  const lineLength = 800 // 横线长度
+  const lineHight = 70; // 间距设置
+  const lineStartX = 310 // 260 // 横线起点x坐标
+  const lineLength = 750 // 横线长度
   
   const key = Math.floor(Math.random() * 1000000);
   const [id] = useState(key);
@@ -116,9 +116,9 @@ export default (props: any) => {
     //
     lineCtx.beginPath();
     lineCtx.fillStyle= "#000";
-    lineCtx.font = "bold 18px serif"; //设置字体
+    lineCtx.font = "bold 14px serif"; //设置字体
     for (let i = 0; i < labelList.length; i++) {
-      lineCtx.fillText(labelList[i], 0, lineHight * i + lineHight + 5);
+      lineCtx.fillText(labelList[i], 0, lineHight * i + lineHight + 3);
     }
   }
 
@@ -139,7 +139,10 @@ export default (props: any) => {
         lineCtx.lineTo(x, y-4);
         lineCtx.stroke();
         // 刻度值
-        lineCtx.fillText(row[j],  x-j, y+ 14); // 控制刻度值位置(x, y)
+        const strLength = row[j]?.toString()?.length
+        console.log('strLength:', strLength)
+
+        lineCtx.fillText(row[j],  x-j - (strLength * 3), y+ 14); // 控制刻度值位置(x, y)
       }
     }
   }

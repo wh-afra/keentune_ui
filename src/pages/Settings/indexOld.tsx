@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { PageLoading } from '@ant-design/pro-layout';
-import { Row, Col, Form, Input, InputNumber, Modal, Select, Popover, Spin, Tooltip } from 'antd';
+import { Row, Col, Form, Input, InputNumber, Modal, Select, Space, Spin, Tooltip } from 'antd';
 import { useIntl, FormattedMessage, request } from 'umi';
 import PageContainer from '@/components/public/PageContainer';
 import { ExampleInfo } from '@/components/public/ExampleInfo';
@@ -26,6 +26,7 @@ TARGET_IP = localhost
 TARGET_PORT = 9873
 PARAMETER = sysctl.json`;
 
+/** 废弃 */
 export default (props: any): React.ReactNode => { 
   const { formatMessage } = useIntl();
   const [form] = Form.useForm();
@@ -44,18 +45,12 @@ export default (props: any): React.ReactNode => {
     requestYaml()
   }, [])
   
-  const LabelRow = ({ label, exampleInfo, state, setState }: any)=> {
-    return (
+  const LabelRow = ({ label, state, setState }: any)=> (
     <div className={styles.variableLabel}>
       <span>{label}</span>
-      <span className={styles.Bulk_btn} onClick={()=> {}/* setState(!state)*/}>
-        {/* {state ? formatMessage({id: 'setting.fill.in'}) : formatMessage({id: 'setting.for.example'}) } */}
-        <Popover content={<pre>{exampleInfo}</pre>} placement="top">
-          {formatMessage({id: 'setting.for.example'})}
-        </Popover>
-      </span>
+      <span className={styles.Bulk_btn} onClick={()=> setState(!state)}>{state ? formatMessage({id: 'setting.fill.in'}) : formatMessage({id: 'setting.for.example'}) }</span>
     </div>
-  )};
+  );
   // 校验文本域内容格式
   const validFunction = (_: any, value: any, message?: string) => {
     if (value && !value.replace(/\s+/g, "")) return Promise.reject(new Error(message || formatMessage({id: 'please.enter'}) ));
@@ -64,9 +59,8 @@ export default (props: any): React.ReactNode => {
     // 校验每一行的格式
     let validate = true;
     let row = 0;
-    let err = '';
-    for (let i= 0; i< list.length; i++) {
-      const item = list[i]
+    for (let item of list) {
+      ++row;
       if (item.trim() === '') {
         validate = true;
       } else if (item.match(/^\[.*?\]$/g)) {
@@ -76,28 +70,19 @@ export default (props: any): React.ReactNode => {
         item.trim().split('=')[0] &&
         item.trim().split('=')[1]
       ) {
-        // 判断是否有中文“，”分隔
-        if (item.trim().split('=')[1].indexOf('，') !== -1) {
-          validate = false;
-          row = i + 1
-          err = formatMessage({id: 'setting.,'})
-          break
-        } else {
-          validate = true;
-        }
+        validate = true;
       } else {
         validate = false;
-        row = i + 1
-        err = formatMessage({id: 'ProfileList.validateInfo2'})
-        break
+        break;
       }
     }
-
     return validate
       ? Promise.resolve()
       : Promise.reject(
           new Error(
-            `${formatMessage({ id: 'ProfileList.validateInfo1' }, {data: row})} ${err}`,
+            `${formatMessage({ id: 'ProfileList.validateInfo1' }, {data: row})} ${formatMessage({
+              id: 'ProfileList.validateInfo2',
+            })}`,
           ),
         );
   };
@@ -142,7 +127,7 @@ export default (props: any): React.ReactNode => {
             formatter: [
               '{a|'+ item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase()) +'('+ item.type +')'+'}',
               item.desc && (
-                Array.isArray(item.desc) ? item.desc.map((key: any)=> item.available === false ? '{e|'+ key +'}' : '{b|'+ key +'}')
+                Array.isArray(item.desc) ? item.desc.map((key: any)=> '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
               ),
             ].flat().filter(item=> item).join('\n'),
@@ -159,8 +144,8 @@ export default (props: any): React.ReactNode => {
                   fontSize: 14,
                   fontWeight: 400,
               },
-              e: {
-                  color: '#f00',
+              x: {
+                  color: '#000',
                   lineHeight: 16,
                   fontSize: 14,
                   fontWeight: 500,
@@ -248,15 +233,6 @@ export default (props: any): React.ReactNode => {
     requestYaml()
   }
 
-  const onChange = (val: string, key: string)=> {
-    console.log('val:', val)
-    window.localStorage.setItem(key, val)
-  }
-
-  const currBrain = localStorage.getItem('brain')
-  const currBench = localStorage.getItem('benchGroup')
-  const currTarget = localStorage.getItem('targetGroup')
-
   return (
     <div className={styles.settings_root}>
       <div className={styles.content}>
@@ -269,47 +245,79 @@ export default (props: any): React.ReactNode => {
                   form={form}
                   layout="vertical"
                   initialValues={{
-                    brain: currBrain || defaultBrain,
-                    benchGroup: currBench || defaultBench,
-                    targetGroup: currTarget || defaultTarget,
+                    brain: defaultBrain,
+                    benchGroup: defaultBench,
+                    targetGroup: defaultTarget,
                   }}
                 >
-                  <Form.Item
-                    label={<LabelRow label={formatMessage({id: 'setting.brain'})} exampleInfo={defaultBrain} />}
-                    name="brain"
-                    rules={[
-                      { required: true, message: formatMessage({id: 'please.enter'}) },
-                      { validator: (_: any, value: any)=> validFunction(_, value) },
-                    ]}
-                  >
-                    <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear
-                      onChange={(e)=> onChange(e.target.value, 'brain')}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label={<LabelRow label={formatMessage({id: 'setting.benchGroup'})} exampleInfo={defaultBench} />}
-                    name="benchGroup"
-                    rules={[
-                      { required: true, message: formatMessage({id: 'please.enter'}) },
-                      { validator: (_: any, value: any)=> validFunction(_, value) },
-                    ]}
-                  >
-                    <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear 
-                      onChange={(e)=> onChange(e.target.value, 'benchGroup')}
-                    />
-                  </Form.Item>
-                  <Form.Item
-                    label={<LabelRow label={formatMessage({id: 'setting.targetGroup'})} exampleInfo={defaultTarget} />}
-                    name="targetGroup"
-                    rules={[
-                      { required: true, message: formatMessage({id: 'please.enter'}) }, 
-                      { validator: (_: any, value: any)=>  validFunction(_, value) },
-                    ]}
-                    className={styles.last_form_Item}
-                  >
-                    <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear 
-                      onChange={(e)=> onChange(e.target.value, 'targetGroup')} />
-                  </Form.Item>
+                  {showBrainExample ? (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.brain'})} state={showBrainExample} setState={setShowBrainExample} />}
+                      name="b"
+                      initialValue=""
+                      rules={[
+                        { required: true, message: '' },
+                      ]}
+                    >
+                      <ExampleInfo rows={6} content={defaultBrain} />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.brain'})} state={showBrainExample} setState={setShowBrainExample} />}
+                      name="brain"
+                      rules={[
+                        { required: true, message: formatMessage({id: 'please.enter'}) },
+                        { validator: (_: any, value: any)=> validFunction(_, value) },
+                      ]}
+                    >
+                      <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear />
+                    </Form.Item>
+                  )}
+
+                  {showBenchExample ? (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.benchGroup'})} state={showBenchExample} setState={setShowBenchExample} />}
+                      name="var"
+                      initialValue=""
+                      rules={[{ required: true, message: '' }]}
+                    >
+                      <ExampleInfo rows={6} content={defaultBench} />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.benchGroup'})} state={showBenchExample} setState={setShowBenchExample} />}
+                      name="benchGroup"
+                      rules={[
+                        { required: true, message: formatMessage({id: 'please.enter'}) },
+                        { validator: (_: any, value: any)=> validFunction(_, value) },
+                      ]}
+                    >
+                      <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear />
+                    </Form.Item>
+                  )}
+
+                  {showTargetExample ? (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.targetGroup'})} state={showTargetExample} setState={setShowTargetExample} />}
+                      name="target"
+                      rules={[{ required: true, message: '' }]}
+                      className={styles.last_form_Item}
+                    >
+                      <ExampleInfo rows={6} content={defaultTarget} />
+                    </Form.Item>
+                  ) : (
+                    <Form.Item
+                      label={<LabelRow label={formatMessage({id: 'setting.targetGroup'})} state={showTargetExample} setState={setShowTargetExample} />}
+                      name="targetGroup"
+                      rules={[
+                        { required: true, message: formatMessage({id: 'please.enter'}) }, 
+                        { validator: (_: any, value: any)=>  validFunction(_, value) },
+                      ]}
+                      className={styles.last_form_Item}
+                    >
+                      <Input.TextArea rows={6} placeholder={formatMessage({id: 'setting.by.format'})} allowClear onChange={() => {}} />
+                    </Form.Item>
+                  )}
                 </Form>
               </PageContainer>
             </Col>
@@ -333,11 +341,11 @@ export default (props: any): React.ReactNode => {
             {/** 右边 */}
             <Col span={12}>
               <p className={styles.title}><FormattedMessage id="env.topology"/></p>
-              <PageContainer style={{ padding:'30px', width: '1100px', height: 'calc(100% - 76.2px)' }}>
-                <ExampleInfo onlyShow height={553} style={{ padding:0 }}>
+              <PageContainer style={{ padding:'30px', width: '1200px', height: 'calc(100% - 76.2px)' }}>
+                <ExampleInfo onlyShow height={553}>
                     <TopoChart title="Optimizing Topology" data={topoChartData} />
                 </ExampleInfo>
-                <ExampleInfo onlyShow height={230} style={{ marginTop: '20px',padding:0, overflowY: 'unset' }}>
+                <ExampleInfo onlyShow height={230} style={{ marginTop: '20px',padding:0}}>
                   <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} />
                 </ExampleInfo>
               </PageContainer>
