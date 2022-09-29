@@ -249,7 +249,7 @@ export default (props: any): React.ReactNode => {
   }
 
   const onChange = (val: string, key: string)=> {
-    console.log('val:', val)
+    // console.log('val:', val)
     window.localStorage.setItem(key, val)
   }
 
@@ -269,9 +269,9 @@ export default (props: any): React.ReactNode => {
                   form={form}
                   layout="vertical"
                   initialValues={{
-                    brain: currBrain || defaultBrain,
-                    benchGroup: currBench || defaultBench,
-                    targetGroup: currTarget || defaultTarget,
+                    brain: currBrain, // || defaultBrain,
+                    benchGroup: currBench, // || defaultBench,
+                    targetGroup: currTarget, // || defaultTarget,
                   }}
                 >
                   <Form.Item
