@@ -40,14 +40,14 @@ const rowItem = (data: any, name: string) => {
       if (algo_tuning?.length) {
         tempList.push( `Algorithm:` )
         for (let i=0; i< algo_tuning.length; i= i+3) {
-          tempList.push( `- ${algo_tuning.slice(i, i+3).join('，')}` )
+          tempList.push( `${i==0? '-': '  '} ${algo_tuning.slice(i, i+3).join('，')}` )
         }
       }
       // 算法字段
       if (algo_sensi?.length) {
         tempList.push( `Sensitivity Algorithm:` )
         for (let i=0; i< algo_sensi.length; i= i+3) {
-          tempList.push( `- ${algo_sensi.slice(i, i+3).join(', ')}` )
+          tempList.push( `${i==0? '-': '  '} ${algo_sensi.slice(i, i+3).join(', ')}` )
         }
       }      
       return {id: ip+type, ip, type: 'brain', color: '#1898a5', desc: tempList }
@@ -60,7 +60,7 @@ const rowItem = (data: any, name: string) => {
         tempList.push( `Active domain:` )
         // domain数组每3个分成一组
         for (let i=0; i< domain.length; i= i+3) {
-          tempList.push( `- ${domain.slice(i, i+3).join(', ')}` )
+          tempList.push( `${i==0? '-': '  '} ${domain.slice(i, i+3).join(', ')}` )
         }
       } else if (domain && typeof domain === 'string') { // 字符串类型
         tempList.push( `Active domain:` )
@@ -77,8 +77,9 @@ const rowItem = (data: any, name: string) => {
       const { destination, benchmark, available } = item
       return {
         id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee', 
-        desc: destination ? `- DEST: ${destination}`: ['[ERROR] IP unavailable'], 
-        destination: `${destination}Target`, benchmark, available }
+        desc: destination ? `DEST: ${destination}`: [`[ERROR] ${available ? 'DEST': 'IP'} unavailable`], 
+        destination: destination ? `${destination}Target`: destination,
+        benchmark, available }
     }
     return {id: ip, ip, type, color: '#11606b'}
   })

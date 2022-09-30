@@ -140,9 +140,9 @@ export default (props: any): React.ReactNode => {
             position: item.position,
             // 格式化显示文本
             formatter: [
-              '{a|'+ item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase()) +'('+ item.type +')'+'}',
+              '{a|'+ 'IP: ' + item?.ip +'（'+ item.type +'）'+'}', // item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase())
               item.desc && (
-                Array.isArray(item.desc) ? item.desc.map((key: any)=> item.available === false ? '{e|'+ key +'}' : '{b|'+ key +'}')
+                Array.isArray(item.desc) ? item.desc.map((key: any)=> (item.available === false || item?.destination === '')? '{e|'+ key +'}' : '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
               ),
             ].flat().filter(item=> item).join('\n'),
