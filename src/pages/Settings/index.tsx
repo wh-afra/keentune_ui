@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PageLoading } from '@ant-design/pro-layout';
-import { Row, Col, Form, Input, InputNumber, Modal, Select, Popover, Spin, Tooltip } from 'antd';
+import { Row, Col, Form, Input, Button, Modal, Select, Popover, Spin, Tooltip } from 'antd';
 import { useIntl, FormattedMessage, request } from 'umi';
 import PageContainer from '@/components/public/PageContainer';
 import { ExampleInfo } from '@/components/public/ExampleInfo';
 import CodeEditer from '@/components/public/CodeEditer';
 import { ReactComponent as CheckIcon } from '@/assets/svg/Check.svg'
 import { ReactComponent as RemakeIcon } from '@/assets/svg/Remake.svg'
+import { ReloadOutlined } from '@ant-design/icons'
 import { requestData, requestInitYaml } from '@/services';
 import { handleRes, waitTime } from '@/uitls/uitls';
 import yaml from 'js-yaml';
@@ -327,7 +328,7 @@ export default (props: any): React.ReactNode => {
               <div style={{marginBottom:'-35px'}}>
                 <Spin spinning={remakeLoading}>
                   <Tooltip placement="bottom" title={ formatMessage({ id: 'remake', defaultMessage: 'Remake' }) }>
-                    <RemakeIcon onClick={handleRemake} />
+                    <Button shape="circle" icon={<ReloadOutlined />} onClick={handleRemake} size="large"/>
                   </Tooltip>
                 </Spin>
               </div>
