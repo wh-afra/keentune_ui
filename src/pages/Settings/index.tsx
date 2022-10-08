@@ -142,7 +142,7 @@ export default (props: any): React.ReactNode => {
             formatter: [
               '{a|'+ 'IP: ' + item?.ip +'（'+ item.type +'）'+'}', // item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase())
               item.desc && (
-                Array.isArray(item.desc) ? item.desc.map((key: any)=> (item.available === false || item?.destination === '')? '{e|'+ key +'}' : '{b|'+ key +'}')
+                Array.isArray(item.desc) ? item.desc.map((key: any)=> (item.available === false || item?.destination?.reachable === false)? '{e|'+ key +'}' : '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
               ),
             ].flat().filter(item=> item).join('\n'),
@@ -184,7 +184,7 @@ export default (props: any): React.ReactNode => {
 
       setTopoChartData({ dataSource, links: bench, groupNumber, errMessage: '' })
     } catch (err) {
-      console.log('err')
+      console.log('requestYaml err:', err)
     }
   };
 
@@ -214,6 +214,9 @@ export default (props: any): React.ReactNode => {
       }
       setLoading(false);
     }).catch((err) => {
+      console.log(err)
+      // 请求init.yaml
+      requestYaml()
       setLoading(false);
     })
   }

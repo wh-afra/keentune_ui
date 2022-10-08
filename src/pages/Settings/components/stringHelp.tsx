@@ -75,10 +75,16 @@ const rowItem = (data: any, name: string) => {
     // 匹配'Bench'
     if (/^Bench-group-[0-9]+$/.test(type)) {
       const { destination, benchmark, available } = item
+      const { reachable, ip: destinationIp } = destination || {} //可达不可达
+      // ERROR信息
+      const errorList = [`[ERROR] ${available ? 'DEST unreachable': 'IP unavailable'}`, (available && !reachable) ? `DEST: ${destinationIp}`: null].filter((key: any)=> key)
       return {
-        id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee', 
-        desc: destination ? `DEST: ${destination}`: [`[ERROR] ${available ? 'DEST': 'IP'} unavailable`], 
-        destination: destination ? `${destination}Target`: destination,
+        id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee',
+        desc: reachable ? `DEST: ${destinationIp}`: errorList, 
+        destination: {
+          ip: `${destinationIp}Target`, // reachable ? `${destinationIp}Target`: destinationIp,
+          reachable,
+        },
         benchmark, available }
     }
     return {id: ip, ip, type, color: '#11606b'}
@@ -197,7 +203,7 @@ const atomicGroups = (list: any, center: any) => {
   
   return connect2.concat(connect1)
 }
-// 连线规则1 
+
 const connectRule1 = (param: any) => {
   if (param.type === 'Bench') {
     /** bench
@@ -206,8 +212,8 @@ const connectRule1 = (param: any) => {
      * 2. available: false时，填充"灰色"，不画线。
      */
     return {
-      source: (param.available && param.destination) ? param.id : '', // 起点
-      target: (param.available && param.destination) ? param.destination: '', // 终点
+      source: (param.available && param.destination?.reachable) ? param.id : '', // 起点
+      target: (param.available && param.destination?.reachable) ? param.destination?.ip: '', // 终点
       symbolSize: [1, 8],
       label: { 
         show: true,
@@ -218,7 +224,7 @@ const connectRule1 = (param: any) => {
       lineStyle: {
         width: 2,
         curveness: 0.3,
-        color: (param.available && param.destination) ? param.color : undefined, //连线颜色
+        color: (param.available && param.destination?.reachable) ? param.color : undefined, //连线颜色
       }
     }
   }
@@ -246,7 +252,7 @@ const connectRule1 = (param: any) => {
   }
   return null
 }
-// 连线规则2
+
 const connectRule2 = (param: any) => {
     /** bench
      * 1. available: true 画线。
