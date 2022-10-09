@@ -54,7 +54,7 @@ const rowItem = (data: any, name: string) => {
     }
     // 匹配'Target'
     if (/^Target-group-[0-9]+$/.test(type)) {
-      const { domain, knobs, available } = item
+      const { domain, knobs=[], available } = item
       let tempList = []
       if (Array.isArray(domain) && domain.length) { // 数组类型
         tempList.push( `Active domain:` )
@@ -69,7 +69,7 @@ const rowItem = (data: any, name: string) => {
       return {
         id: `${ip}Target`, ip, type, color: available ? '#fe6f69': '#eee', // 填充色控制
         desc: available ? tempList : ['[ERROR] IP unavailable'], 
-        knobs: knobs?.length ? knobs[0]: '',
+        knobs: knobs.length ? knobs?.join(', '): '',
         available }
     }
     // 匹配'Bench'
