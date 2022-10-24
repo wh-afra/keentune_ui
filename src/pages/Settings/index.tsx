@@ -342,7 +342,7 @@ export default (props: any): React.ReactNode => {
                     <TopoChart title="Optimizing Topology" data={topoChartData} />
                 </ExampleInfo>
                 <ExampleInfo onlyShow height={230} style={{ marginTop: '20px',padding:0, overflowY: 'unset' }}>
-                  <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} />
+                  <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} domId="yaml_code_wrapper"/>
                 </ExampleInfo>
               </PageContainer>
             </Col>
