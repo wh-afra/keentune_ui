@@ -125,6 +125,9 @@ export default (props: any): React.ReactNode => {
 
       // case1.数据
       const dataSource = groupData.map((item: any)=> {
+        // 判断是Target...类型
+        const tempStr = (/^Target-group-[0-9]+$/.test(item?.type)? `[${item?.type?.slice(13)}] Target`: item.type)
+
         let q: any = {
           name: item.id,
           // x: item.x,
@@ -141,7 +144,8 @@ export default (props: any): React.ReactNode => {
             position: item.position,
             // 格式化显示文本
             formatter: [
-              '{a|'+ 'IP: ' + item?.ip +'（'+ item.type +'）'+'}', // item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase())
+              '{a|'+ tempStr +': ' + item?.ip +
+              (('Bench' === item?.type && item.destinationIp) ? ` --> ${item.destinationIp}`: '') +'}', // item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase())
               item.desc && (
                 Array.isArray(item.desc) ? item.desc.map((key: any)=> (item.available === false || item?.destination?.reachable === false)? '{e|'+ key +'}' : '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
