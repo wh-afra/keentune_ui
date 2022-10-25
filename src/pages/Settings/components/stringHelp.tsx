@@ -68,7 +68,7 @@ const rowItem = (data: any, name: string) => {
       // }
       return {
         id: `${ip}Target`, ip, type, color: (available ? '#fe6f69': '#eee'), // 填充色控制
-        desc: available ? tempList : ['[ERROR] IP unavailable'], 
+        desc: available ? tempList : ['network unavailable'], 
         knobs: knobs.length ? knobs?.join(', '): '',
         available }
     }
@@ -77,7 +77,7 @@ const rowItem = (data: any, name: string) => {
       const { destination, benchmark, available } = item
       const { reachable, ip: destinationIp } = destination || {} //可达不可达
       // ERROR信息
-      const errorList = [`[ERROR] ${available ? 'DEST unreachable': 'IP unavailable'}`, (available && !reachable) ? `DEST: ${destinationIp}`: null].filter((key: any)=> key).reverse()
+      const errorList = [`${available ? 'DEST unreachable': 'network unavailable'}`, (available && !reachable) ? `DEST: ${destinationIp}`: null].filter((key: any)=> key).reverse()
       return {
         id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee',
         desc: reachable ? '': errorList,  // reachable ? `DEST: ${destinationIp}`: errorList, 
