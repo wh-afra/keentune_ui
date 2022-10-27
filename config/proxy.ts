@@ -28,6 +28,11 @@ export default {
       changeOrigin: true,
       pathRewrite: { '^': '' },
     },
+    '/write': {
+      target: 'http://39.102.55.119:8082',
+      changeOrigin: true,
+      pathRewrite: { '^': '' },
+    },
   },
   test: {
     '/api/': {
