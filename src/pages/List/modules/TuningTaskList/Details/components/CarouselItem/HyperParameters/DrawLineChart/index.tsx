@@ -140,7 +140,7 @@ export default (props: any) => {
         lineCtx.stroke();
         // 刻度值
         const strLength = row[j]?.toString()?.length
-        console.log('strLength:', strLength)
+        // console.log('strLength:', strLength)
 
         lineCtx.fillText(row[j],  x-j - (strLength * 3), y+ 14); // 控制刻度值位置(x, y)
       }
@@ -168,6 +168,8 @@ export default (props: any) => {
         let x = 0;
         const value = valueList[n]
         // n === 9 && console.log('---- value:', value)
+
+        if (!options) { break }
 
         if (myIsNaN(options[0]) && myIsNaN(options[options.length -1])) { // 判断刻度是数值的情况
           const min = options[0]

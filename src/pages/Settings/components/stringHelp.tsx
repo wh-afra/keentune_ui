@@ -35,50 +35,58 @@ const rowItem = (data: any, name: string) => {
   let dataSource: any = data.map((item: any)=> {
     const { ip, type, algo_sensi, algo_tuning } = item
     if (type === 'Brain') {
-      let tempList = []
-      // 算法字段
-      if (algo_tuning?.length) {
-        tempList.push( `Algorithm:` )
-        for (let i=0; i< algo_tuning.length; i= i+3) {
-          tempList.push( `- ${algo_tuning.slice(i, i+3).join('，')}` )
-        }
-      }
-      // 算法字段
-      if (algo_sensi?.length) {
-        tempList.push( `Sensitivity Algorithm:` )
-        for (let i=0; i< algo_sensi.length; i= i+3) {
-          tempList.push( `- ${algo_sensi.slice(i, i+3).join(', ')}` )
-        }
-      }      
+      let tempList: any = []
+      // // 算法字段
+      // if (algo_tuning?.length) {
+      //   tempList.push( `Algorithm:` )
+      //   for (let i=0; i< algo_tuning.length; i= i+3) {
+      //     tempList.push( `${i==0? '-': '  '} ${algo_tuning.slice(i, i+3).join('，')}` )
+      //   }
+      // }
+      // // 算法字段
+      // if (algo_sensi?.length) {
+      //   tempList.push( `Sensitivity Algorithm:` )
+      //   for (let i=0; i< algo_sensi.length; i= i+3) {
+      //     tempList.push( `${i==0? '-': '  '} ${algo_sensi.slice(i, i+3).join(', ')}` )
+      //   }
+      // }
       return {id: ip+type, ip, type: 'brain', color: '#1898a5', desc: tempList }
     }
     // 匹配'Target'
     if (/^Target-group-[0-9]+$/.test(type)) {
-      const { domain, knobs, available } = item
-      let tempList = []
-      if (Array.isArray(domain) && domain.length) { // 数组类型
-        tempList.push( `Active domain:` )
-        // domain数组每3个分成一组
-        for (let i=0; i< domain.length; i= i+3) {
-          tempList.push( `- ${domain.slice(i, i+3).join(', ')}` )
-        }
-      } else if (domain && typeof domain === 'string') { // 字符串类型
-        tempList.push( `Active domain:` )
-        tempList.push( `- ${domain}` )
-      }
+      const { domain, knobs=[], available } = item
+      let tempList: any = []
+      // if (Array.isArray(domain) && domain.length) { // 数组类型
+      //   tempList.push( `Active domain:` )
+      //   // domain数组每3个分成一组
+      //   for (let i=0; i< domain.length; i= i+3) {
+      //     tempList.push( `${i==0? '-': '  '} ${domain.slice(i, i+3).join(', ')}` )
+      //   }
+      // } else if (domain && typeof domain === 'string') { // 字符串类型
+      //   tempList.push( `Active domain:` )
+      //   tempList.push( `- ${domain}` )
+      // }
       return {
-        id: `${ip}Target`, ip, type, color: available ? '#fe6f69': '#eee', // 填充色控制
-        desc: available ? tempList : ['[ERROR] IP unavailable'], 
-        knobs: knobs?.length ? knobs[0]: '',
+        id: `${ip}Target`, ip, type, color: (available ? '#fe6f69': '#eee'), // 填充色控制
+        desc: available ? tempList : ['network unavailable'], 
+        knobs: knobs.length ? knobs?.join(', '): '',
         available }
     }
     // 匹配'Bench'
     if (/^Bench-group-[0-9]+$/.test(type)) {
       const { destination, benchmark, available } = item
+      const { reachable, ip: destinationIp } = destination || {} //可达不可达
+      // ERROR信息
+      const errorList = [`${available ? 'DEST unreachable': 'network unavailable'}`, (available && !reachable) ? `DEST: ${destinationIp}`: null].filter((key: any)=> key).reverse()
       return {
-        id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee', 
-        desc: destination ? `- DEST: ${destination}`: ['[ERROR] IP unavailable'], 
-        destination: `${destination}Target`, benchmark, available }
+        id: `${ip}Bench`, ip, type:'Bench', color: available ? '#56be60' : '#eee',
+        desc: reachable ? '': errorList,  // reachable ? `DEST: ${destinationIp}`: errorList, 
+        destinationIp: destinationIp,
+        destination: {
+          ip: `${destinationIp}Target`,
+          reachable,
+        },
+        benchmark, available }
     }
     return {id: ip, ip, type, color: '#11606b'}
   })
@@ -196,7 +204,7 @@ const atomicGroups = (list: any, center: any) => {
   
   return connect2.concat(connect1)
 }
-// 连线规则1 
+
 const connectRule1 = (param: any) => {
   if (param.type === 'Bench') {
     /** bench
@@ -205,8 +213,8 @@ const connectRule1 = (param: any) => {
      * 2. available: false时，填充"灰色"，不画线。
      */
     return {
-      source: (param.available && param.destination) ? param.id : '', // 起点
-      target: (param.available && param.destination) ? param.destination: '', // 终点
+      source: (param.available && param.destination?.reachable) ? param.id : '', // 起点
+      target: (param.available && param.destination?.reachable) ? param.destination?.ip: '', // 终点
       symbolSize: [1, 8],
       label: { 
         show: true,
@@ -217,7 +225,7 @@ const connectRule1 = (param: any) => {
       lineStyle: {
         width: 2,
         curveness: 0.3,
-        color: (param.available && param.destination) ? param.color : undefined, //连线颜色
+        color: (param.available && param.destination?.reachable) ? param.color : undefined, //连线颜色
       }
     }
   }
@@ -245,7 +253,7 @@ const connectRule1 = (param: any) => {
   }
   return null
 }
-// 连线规则2
+
 const connectRule2 = (param: any) => {
     /** bench
      * 1. available: true 画线。

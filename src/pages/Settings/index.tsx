@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { PageLoading } from '@ant-design/pro-layout';
-import { Row, Col, Form, Input, InputNumber, Modal, Select, Popover, Spin, Tooltip } from 'antd';
+import { Row, Col, Form, Input, Button, Modal, Select, Popover, Spin, Tooltip } from 'antd';
 import { useIntl, FormattedMessage, request } from 'umi';
 import PageContainer from '@/components/public/PageContainer';
 import { ExampleInfo } from '@/components/public/ExampleInfo';
 import CodeEditer from '@/components/public/CodeEditer';
 import { ReactComponent as CheckIcon } from '@/assets/svg/Check.svg'
 import { ReactComponent as RemakeIcon } from '@/assets/svg/Remake.svg'
+import { ReloadOutlined } from '@ant-design/icons'
 import { requestData, requestInitYaml } from '@/services';
 import { handleRes, waitTime } from '@/uitls/uitls';
 import yaml from 'js-yaml';
@@ -124,6 +125,9 @@ export default (props: any): React.ReactNode => {
 
       // case1.数据
       const dataSource = groupData.map((item: any)=> {
+        // 判断是Target...类型
+        const tempStr = (/^Target-group-[0-9]+$/.test(item?.type)? `[${item?.type?.slice(13)}] Target`: item.type)
+
         let q: any = {
           name: item.id,
           // x: item.x,
@@ -140,9 +144,10 @@ export default (props: any): React.ReactNode => {
             position: item.position,
             // 格式化显示文本
             formatter: [
-              '{a|'+ item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase()) +'('+ item.type +')'+'}',
+              '{a|'+ tempStr +': ' + item?.ip +
+              (('Bench' === item?.type && item.destinationIp) ? ` --> ${item.destinationIp}`: '') +'}', // item?.ip?.replace(/^[a-z]/, (L:string)=>L.toUpperCase())
               item.desc && (
-                Array.isArray(item.desc) ? item.desc.map((key: any)=> item.available === false ? '{e|'+ key +'}' : '{b|'+ key +'}')
+                Array.isArray(item.desc) ? item.desc.map((key: any)=> (item.available === false || item?.destination?.reachable === false)? '{e|'+ key +'}' : '{b|'+ key +'}')
                 : '{b|'+ item.desc +'}'
               ),
             ].flat().filter(item=> item).join('\n'),
@@ -184,7 +189,7 @@ export default (props: any): React.ReactNode => {
 
       setTopoChartData({ dataSource, links: bench, groupNumber, errMessage: '' })
     } catch (err) {
-      console.log('err')
+      console.log('requestYaml err:', err)
     }
   };
 
@@ -214,6 +219,9 @@ export default (props: any): React.ReactNode => {
       }
       setLoading(false);
     }).catch((err) => {
+      console.log(err)
+      // 请求init.yaml
+      requestYaml()
       setLoading(false);
     })
   }
@@ -249,7 +257,7 @@ export default (props: any): React.ReactNode => {
   }
 
   const onChange = (val: string, key: string)=> {
-    console.log('val:', val)
+    // console.log('val:', val)
     window.localStorage.setItem(key, val)
   }
 
@@ -269,9 +277,9 @@ export default (props: any): React.ReactNode => {
                   form={form}
                   layout="vertical"
                   initialValues={{
-                    brain: currBrain || defaultBrain,
-                    benchGroup: currBench || defaultBench,
-                    targetGroup: currTarget || defaultTarget,
+                    brain: currBrain, // || defaultBrain,
+                    benchGroup: currBench, // || defaultBench,
+                    targetGroup: currTarget, // || defaultTarget,
                   }}
                 >
                   <Form.Item
@@ -324,7 +332,7 @@ export default (props: any): React.ReactNode => {
               <div style={{marginBottom:'-35px'}}>
                 <Spin spinning={remakeLoading}>
                   <Tooltip placement="bottom" title={ formatMessage({ id: 'remake', defaultMessage: 'Remake' }) }>
-                    <RemakeIcon onClick={handleRemake} />
+                    <Button shape="circle" icon={<ReloadOutlined />} onClick={handleRemake} size="large"/>
                   </Tooltip>
                 </Spin>
               </div>
@@ -338,7 +346,7 @@ export default (props: any): React.ReactNode => {
                     <TopoChart title="Optimizing Topology" data={topoChartData} />
                 </ExampleInfo>
                 <ExampleInfo onlyShow height={230} style={{ marginTop: '20px',padding:0, overflowY: 'unset' }}>
-                  <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} />
+                  <CodeEditer mode='yaml' code={yamlData} lineNumbers height={230} theme={'eclipse'} domId="yaml_code_wrapper"/>
                 </ExampleInfo>
               </PageContainer>
             </Col>
