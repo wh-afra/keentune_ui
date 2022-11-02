@@ -66,8 +66,10 @@ export default defineConfig({
     },
     {
       requestLibPath: "import { request } from 'umi'",
-      schemaPath: 'https://gw.alipayobjects.com/os/antfincdn/CA1dOm%2631B/openapi.json',
-      projectName: 'swagger',
+	    schemaPath: join(__dirname, 'openapi.json'),
+      //requestLibPath: "import { request } from 'umi'",
+      //schemaPath: 'https://gw.alipayobjects.com/os/antfincdn/CA1dOm%2631B/openapi.json',
+      //projectName: 'swagger',
     },
   ],
   nodeModulesTransform: { type: 'none' },
